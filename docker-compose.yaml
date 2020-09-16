@@ -62,35 +62,25 @@ services:
     #     depends_on:
     #         - webapp-backend
     
-    # jupyter-analysis:
-    #     build: ./jupyter-analysis
-    #     image: jupyter-analysis
-    #     volumes:
-    #         - jupyter_data: /var/lib/jupyter
-    #     ports: 
-    #         - "5000:5002"
-    #     networks:
-    #         - analysis_network
-    #         - backend_network
-    #     depends_on:
-    #         - mysql-db
-
-    analysis_jupyter:
-        image: jupyter/datascience-notebook
-        environment:
-            JUPYTER_ENABLE_LAB: 'yes'
+    lab:
+        image: jupyter/scipy-notebook
         volumes:
-            - analysis_data:/home/reports/
+            - ./notebooks/:/notebooks
         ports:
-            - "5001:5000"
-        container_name: analysis_jupyter
+            - "8888:8888"
+        environment:
+            - JUPYTER_ENABLE_LAB=1
+        command: start-notebook.sh --NotebookApp.notebook_dir=/notebooks
+        networks:
+            - backend_network
+            - analysis_network
         depends_on:
             - db
 
 volumes:
     db_data:
     backend_data:
-    analysis_data:
+
 networks:
     frontend_network:
     backend_network:
