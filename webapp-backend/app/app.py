@@ -27,7 +27,7 @@ def input_table() -> List[Dict]:
 
 @app.route('/')
 def index() -> str:
-    return json.dumps({'input_table': input_table()})
+    return json.dumps({'input_tables': input_table()})
 
 
 if __name__ == '__main__':
