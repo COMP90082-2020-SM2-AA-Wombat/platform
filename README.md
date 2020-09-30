@@ -1,9 +1,14 @@
-# aa_platform
+# Platform
 
-Run by running the command docker-compose up
+This repository is the central repsoitry.
+
+It deplys the application using docker compose.
+
+Push to master with approcal only by group members.
+
+Run application: command docker-compose up
 
 To do:
-
-Pull code from relevant repos before deployment
+Pull code from analytics before deployment
 Set Lab to not require a token or password on startup
 
