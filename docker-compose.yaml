@@ -43,25 +43,30 @@ services:
     #     depends_on:
     #         - webapp-backend
     
-    lab:
-        build: ./lab
+    jupyterhub:
+        build: ./jupyterhub
+        image: jupyterhub
         restart: always
-        container_name: lab
+        container_name: jupyterhub-container
         volumes:
-            - ./lab/notebooks:/notebooks
+            - /var/run/docker.sock:/var/run/docker.sock
+            - jupyterhub_data:/srv/jupyterhub
         ports:
-            - "8888:8888"
+            - "8000:8000"
         environment:
-            - JUPYTER_ENABLE_LAB=1
-        networks:
-            - backend_network
-            - analysis_network
-        command: start-notebook.sh --NotebookApp.notebook_dir=/notebooks   
+            DOCKER_JUPYTER_CONTAINER: jupyter-notebook
+            DOCKER_JUPYTER_IMAGE: scipy-notebook
+            DOCKER_NETWORK_NAME: analysis_network
+            HUB_IP: jupyterhub
+            DOCKER_NOTEBOOK_DIR: ./notebooks 
+        # command: start-notebook.sh --NotebookApp.notebook_dir=/notebooks   
         depends_on:
             - db
 
 volumes:
     db_data:
+    jupyterhub_data:
+       
 networks:
     frontend_network:
     backend_network:
