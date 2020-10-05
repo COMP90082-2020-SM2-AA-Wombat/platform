@@ -55,7 +55,7 @@ services:
             - "8000:8000"
         environment:
             DOCKER_JUPYTER_CONTAINER: jupyter-notebook
-            DOCKER_JUPYTER_IMAGE: scipy-notebook
+            DOCKER_JUPYTER_IMAGE: jupyter/scipy-notebook
             DOCKER_NETWORK_NAME: analysis_network
             HUB_IP: jupyterhub
             DOCKER_NOTEBOOK_DIR: ./notebooks 
