@@ -1,16 +1,11 @@
-# aa_platform
+# Platform
 
-Run by running the command docker-compose up
+This repository is the central repsoitry.
+
+It deplys the application using docker compose.
+
+Push to master with approval only by group members.
 
 To do:
-
-<<<<<<< HEAD
-Download notbeooks from notebooks repo and add to labs volume.\n
-Download mysql init script from db repo.\n
-Create additional 'lab' user for lab connection to db.
-=======
-Download notbeooks from notebooks repo and add to labs volume.
-Download mysql init script from db repo
+Pull code from analytics before deployment
 Set Lab to not require a token or password on startup
-
->>>>>>> baa22e7b47ca431ab9c86da113ac7fe18b80f329
