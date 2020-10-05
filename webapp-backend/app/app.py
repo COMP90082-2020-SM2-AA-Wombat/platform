@@ -9,15 +9,15 @@ app = Flask(__name__)
 
 def input_table() -> List[Dict]:
     config = {
-        'user': 'root',
+        'user': 'user',
         'password': 'password',
         'host': 'db',
         'port': '3306',
         'database': 'AA_AUDIT'
     }
     connection = mysql.connector.connect(**config)
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM input_table')
+    cursor = connection.cursor(buffered=True)    
+    cursor.execute('SELECT * FROM input_table_2')
     results = [{name: color} for (name, color) in cursor]
     cursor.close()
     connection.close()
