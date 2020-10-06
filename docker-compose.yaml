@@ -53,12 +53,14 @@ services:
             - jupyterhub_data:/srv/jupyterhub
         ports:
             - "8000:8000"
+        networks: 
+            - jupyterhub_network
         environment:
             DOCKER_JUPYTER_CONTAINER: jupyter-notebook
-            DOCKER_JUPYTER_IMAGE: jupyter/scipy-notebook
-            DOCKER_NETWORK_NAME: analysis_network
+            DOCKER_JUPYTER_IMAGE: jupyter/base-notebook
+            DOCKER_NETWORK_NAME: jupyterhub_network
             HUB_IP: jupyterhub
-            DOCKER_NOTEBOOK_DIR: ./notebooks 
+            DOCKER_NOTEBOOK_DIR: /home/jovyan/work
         # command: start-notebook.sh --NotebookApp.notebook_dir=/notebooks   
         depends_on:
             - db
@@ -70,4 +72,6 @@ volumes:
 networks:
     frontend_network:
     backend_network:
-    analysis_network: 
+    jupyterhub_network:
+        driver: bridge
+        name: jupyterhub_network
