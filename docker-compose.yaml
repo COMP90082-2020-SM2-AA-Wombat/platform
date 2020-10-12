@@ -1,68 +1,72 @@
 version: "3"
 
 services:
-    db:
-        image: mysql:5.7
-        restart: always
-        container_name: db
-        ports:
-            - "3306:3306"
-        environment:
-            MYSQL_DATABASE: 'AA_AUDIT'
-            restart: always
-            MYSQL_USER: 'user'
-            MYSQL_PASSWORD: 'password'
-            MYSQL_ROOT_PASSWORD: 'password'
-        volumes:
-            - ./mysql-db/sql-scripts:/docker-entrypoint-initdb.d/:ro
-            - db_data:/var/lib/mysql
-        networks: 
-            - backend_network
+  db:
+    image: mysql:5.7
+    restart: always
+    container_name: db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: "AA_AUDIT"
+      restart: always
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+    volumes:
+      - ./mysql-db/sql-scripts:/docker-entrypoint-initdb.d/:ro
+      - db_data:/var/lib/mysql
+    networks:
+      - backend_network
 
-    webapp-backend:
-        build: ./webapp-backend
-        restart: always
-        container_name: webapp-backend
-        volumes:
-            - ./webapp-backend/app:/app
-        ports: 
-            - "5000:5000"
-        networks:
-            - frontend_network
-            - backend_network
-        depends_on:
-            - db
+  webapp-backend:
+    build: ./webapp-backend
+    restart: always
+    container_name: webapp-backend
+    volumes:
+      - ./webapp-backend/app:/app
+    ports:
+      - "5000:5000"
+    networks:
+      - frontend_network
+      - backend_network
+    depends_on:
+      - db
 
-    # webapp-frontend:
-    #     build: ./webapp-frontend
-    #     image: webapp-frontend
-    #     ports: 
-    #         - "5000:5001"
-    #     networks:
-    #         - frontend_network
-    #     depends_on:
-    #         - webapp-backend
-    
-    lab:
-        build: ./lab
-        restart: always
-        container_name: lab
-        volumes:
-            - ./lab/notebooks:/notebooks
-        ports:
-            - "8888:8888"
-        environment:
-            - JUPYTER_ENABLE_LAB=1
-        networks:
-            - backend_network
-            - analysis_network
-        command: start-notebook.sh --NotebookApp.notebook_dir=/notebooks   
-        depends_on:
-            - db
+  webapp-frontend:
+    build: ./webapp-frontend
+    image: webapp-frontend
+    container_name: webapp-frontend
+    volumes:
+      - ./webapp-frontend/app:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend_network
+      - backend_network
+    depends_on:
+      - webapp-backend
+
+  lab:
+    build: ./lab
+    restart: always
+    container_name: lab
+    volumes:
+      - ./lab/notebooks:/notebooks
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=1
+    networks:
+      - backend_network
+      - analysis_network
+    command: start-notebook.sh --NotebookApp.notebook_dir=/notebooks
+    depends_on:
+      - db
 
 volumes:
-    db_data:
+  db_data:
 networks:
-    frontend_network:
-    backend_network:
-    analysis_network: 
+  frontend_network:
+  backend_network:
+  analysis_network:
