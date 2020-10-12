@@ -4,8 +4,11 @@ This repository is the central repsoitry.
 
 It deplys the application using docker compose.
 
-Push to master with approval only by group members.
+Push to main with approval only by group members.
+
+Commit all notebooks to notebooks repo
+
+use shutdown.sh to bring everything down and start fresh
 
 To do:
-Pull code from analytics before deployment
-Set Lab to not require a token or password on startup
+ - see comments in code
