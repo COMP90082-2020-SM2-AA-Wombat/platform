@@ -9,38 +9,39 @@ import pandas as pd
 app = Flask(__name__)
 CORS(app)
 
+# Create connection
+config = {
+    'user': 'root',
+    'password': 'password',
+    # "host": "db",
+    'host': 'localhost',
+    'port': '3306',
+    'database': 'AA_AUDIT'
+}
+
+
+connection = mysql.connector.connect(**config)
 
 def input_table() -> List[Dict]:
-    config = {
-        'user': 'root',
-        'password': 'password',
-        # "host": "db",
-        'host': 'localhost',
-        'port': '3306',
-        'database': 'AA_AUDIT'
-    }
-    connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM input_table')
     results = [{name: color} for (name, color) in cursor]
-    cursor.close()
-    connection.close()
-
     return results
 
 
 @app.route('/')
 def index() -> str:
-    # return "hello"
+    
     return json.dumps({'input_tables': input_table()})
 
 @app.route("/csv", methods=["POST"])
 def csvInjestion() -> str:
-    print(request.files)
 
     files = request.files
     for key in files:
         print(key, files[key])
+        lol = pd.read_csv(files[key])
+        print(lol)
     print(files)
     return "hello world"
 
