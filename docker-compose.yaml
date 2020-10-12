@@ -3,10 +3,12 @@ version: "3"
 services:
     db:
         image: mysql
+        # restart when container crashes
         restart: always
         container_name: db
         ports:
             - "3306:3306"
+        # TO-DO: create jupyter analyst user and webapp user
         environment:
             MYSQL_DATABASE: 'AA_AUDIT'
             restart: always
@@ -14,7 +16,10 @@ services:
             MYSQL_PASSWORD: 'password'
             MYSQL_ROOT_PASSWORD: 'password'
         volumes:
+            # sql scripts will be run automatically only when volume is empty (ie initial startup)
+            #TO-DO: debug issues in startup of db (see logs on startup)
             - ./mysql-db/sql-scripts:/docker-entrypoint-initdb.d/:ro
+            # data persisted to this volume on host
             - db_data:/var/lib/mysql
         networks: 
             - backend_network
@@ -31,7 +36,6 @@ services:
         networks:
             - frontend_network
             - backend_network
-            - jupyterhub_network
         depends_on:
             - db
 
@@ -51,20 +55,23 @@ services:
         restart: always
         container_name: jupyterhub
         volumes:
+            # TO-DO are these volumes needed if notebooks not persisted to disk?
             - /var/run/docker.sock:/var/run/docker.sock
             - jupyterhub_data:/srv/jupyterhub
         ports:
+            #TO-DO: expose hub to network to be access by remote users
             - "8000:8000"
         networks: 
             - jupyterhub_network
         environment:
-            # DOCKER_JUPYTER_CONTAINER: jupyter-notebook
+            #TO-DO: scipy-notebook not base image?
             DOCKER_JUPYTER_IMAGE: jupyterlab/scipy-notebook
+            # TO-DO: spawn user containers on user's machine (swarmspawner?)
             DOCKER_NETWORK_NAME: jupyterhub_network
             HUB_IP: jupyterhub
-            DOCKER_NOTEBOOK_DIR: /home/jovyan/work
+            # DOCKER_NOTEBOOK_DIR: /home/jovyan/work
+            #TO-DO allow access for non admin users to only required directories in notebook repo
             NB_PORT: 8000
-
         depends_on:
             - db
 

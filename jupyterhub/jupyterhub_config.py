@@ -1,46 +1,25 @@
-import os
-
 c = get_config()
 
-c.JupyterHub.spawner_class = 'repo2dockerspawner.Repo2DockerSpawner'
-c.Repo2DockerSpawner.build_image = 'jupyter/repo2docker:0.11.0'
+c.JupyterHub.spawner_class = 'repo2dockerspawner.Repo2DockerSpawner' #see https://github.com/ideonate/repo2dockerspawner
 
-# c.DockerSpawner.image = os.environ["DOCKER_JUPYTER_IMAGE"]
+# default images
+c.Repo2DockerSpawner.build_image = 'jupyter/repo2docker:0.11.0'
 c.DockerSpawner.image = 'jupyter/scipy-notebook'
 c.DockerSpawner.network_name = 'jupyterhub_network'
 c.JupyterHub.hub_ip = '0.0.0.0' 
-c.JupyterHub.hub_connect_ip = 'jupyterhub'
-c.Authenticator.admin_users = {'admin'}
+c.JupyterHub.hub_connect_ip = 'jupyterhub' #hub container name
+c.Authenticator.admin_users = {'admin'} #admin user still needs to be created on start up but does not need to be authorized
 c.DockerSpawner.start_timeout = 600
-c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator'
-# This will shut a user's server when they close their browser window
-# c.JupyterHub.shutdown_on_logout = True
+c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator' #hub/authorize when logged in as admin will allow you to authorize the creation of new users.
+                                                                                #See https://native-authenticator.readthedocs.io/en/latest/quickstart.html
+c.DockerSpawner.remove_containers = True #containers are deleted when stopped
+c.Spawner.default_url = '/lab' #use jupyterlab
 
-# c.JupyterHub.cookie_secret = bytes.fromhex('e60ea063651c08686d64d4b4fd762879765fbd52b36f130fba9776c4493c6ff2')
-
-# Welcome Page
-# c.Spawner.args = ['--NotebookApp.default_url=/hub/login']
-
-
-
-# notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
-# c.DockerSpawner.notebook_dir = notebook_dir
-
-# # Mount the real user's Docker volume on the host to the notebook user's
-# # notebook directory in the container
-# c.DockerSpawner.volumes = {
-#           'jupyterhub-user-{username}': '/home/jovyan/work',
-#           'jupyterhub-shared': '/home/jovyan/work/shared',
-#           'jupyterhub-data': '/home/jovyan/work/data'
-# }
-
-# c.InteractiveShellApp.exec_lines = [
-#     'pip3 install -r /etc/requirements.txt'
-#     'import numpy as np\n'
-#     'import numpy as np\n'
-#     'import scipy as sp\n'
-#     'import matplotlib as plt\n'
-# ]
-
-c.DockerSpawner.remove_containers = True
-c.Spawner.default_url = '/lab'
+'''
+TO-DO: 
+    - Limit user access to certain dirs in repo
+    - pull from private git repo
+    - allow for easier push to origin and merging to main in repo from jupyter console
+    - spwan spawners on user's host machine
+    - export notebooks from jupyter console
+'''

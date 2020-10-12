@@ -1,49 +1,3 @@
--- MySQL Workbench Forward Engineering
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
--- -----------------------------------------------------
--- Schema AA_AUDIT
--- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `AA_AUDIT` ;
-
--- -----------------------------------------------------
--- Schema AA_AUDIT
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `AA_AUDIT` DEFAULT CHARACTER SET utf8 ;
-USE `AA_AUDIT` ;
-
-CREATE TABLE input_table_2 (
-  name VARCHAR(20),
-  color VARCHAR(10)
-);
-
-INSERT INTO input_table_2
-  (name, color)
-VALUES
-  ('Sam', 'blue'),
-  ('Ari', 'yellow');
--- -----------------------------------------------------
--- Table `AA_AUDIT`.`facility_operator`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `AA_AUDIT`.`facility_operator` ;
-
-CREATE TABLE IF NOT EXISTS `AA_AUDIT`.`facility_operator` (
-  `operator_id` INT NOT NULL,
-  `name` VARCHAR(45) NULL,
-  `registration_number` VARCHAR(45) NULL,
-  `public_private` VARCHAR(45) NULL,
-=======
-------------------------------------------------------
-------------------------------------------------------
--- AA AUDITS DDL V3.6 + DUMMY DATA INSERTS
-------------------------------------------------------
-------------------------------------------------------
-
-
-
 CREATE DATABASE  IF NOT EXISTS `AA_AUDIT` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `AA_AUDIT`;
 -- MySQL dump 10.13  Distrib 8.0.21, for macos10.15 (x86_64)
@@ -321,3 +275,232 @@ CREATE TABLE `facility_operator` (
   `name` varchar(45) DEFAULT NULL,
   `registration_number` varchar(45) DEFAULT NULL,
   `public_private` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`operator_id`),
+  UNIQUE KEY `registration_number_UNIQUE` (`registration_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `facility_stated`
+--
+
+DROP TABLE IF EXISTS `facility_stated`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `facility_stated` (
+  `facilities_has_linacs_linac_id` varchar(45) NOT NULL,
+  `trs_398_method_method_id` int NOT NULL,
+  `amount` decimal(65,30) DEFAULT NULL,
+  `facilities_has_planning_systems_planning_system_id` varchar(45) NOT NULL,
+  `facilities_has_cts_ct_id` varchar(45) NOT NULL,
+  `energy_level_energy_level` varchar(45) NOT NULL,
+  `planning_system_algorithm_algorithm_id` int NOT NULL,
+  `phantoms_phantom_id` int NOT NULL,
+  `facilities_has_planning_systems_planning_systems_ps_id` int NOT NULL,
+  `audits_audit_id` int NOT NULL,
+  `audits_revision_num` int NOT NULL,
+  PRIMARY KEY (`facilities_has_linacs_linac_id`,`trs_398_method_method_id`,`facilities_has_planning_systems_planning_system_id`,`facilities_has_cts_ct_id`,`energy_level_energy_level`,`planning_system_algorithm_algorithm_id`,`phantoms_phantom_id`,`facilities_has_planning_systems_planning_systems_ps_id`,`audits_audit_id`,`audits_revision_num`),
+  KEY `fk_facility_stated_rename_facilities_has_linacs1_idx` (`facilities_has_linacs_linac_id`),
+  KEY `fk_facility_stated_rename_trs_398_method1_idx` (`trs_398_method_method_id`),
+  KEY `fk_facility_stated_facilities_has_cts1_idx` (`facilities_has_cts_ct_id`),
+  KEY `fk_facility_stated_energy_level1_idx` (`energy_level_energy_level`),
+  KEY `fk_facility_stated_planning_system_algorithm1_idx` (`planning_system_algorithm_algorithm_id`),
+  KEY `fk_facility_stated_phantoms1_idx` (`phantoms_phantom_id`),
+  KEY `fk_facility_stated_facilities_has_planning_systems1_idx` (`facilities_has_planning_systems_planning_systems_ps_id`),
+  KEY `fk_facility_stated_audits1_idx` (`audits_audit_id`,`audits_revision_num`),
+  CONSTRAINT `fk_facility_stated_audits1` FOREIGN KEY (`audits_audit_id`, `audits_revision_num`) REFERENCES `audits` (`audit_id`, `revision_num`),
+  CONSTRAINT `fk_facility_stated_energy_level1` FOREIGN KEY (`energy_level_energy_level`) REFERENCES `energy_level` (`energy_level`),
+  CONSTRAINT `fk_facility_stated_facilities_has_cts1` FOREIGN KEY (`facilities_has_cts_ct_id`) REFERENCES `facilities_has_cts` (`ct_id`),
+  CONSTRAINT `fk_facility_stated_facilities_has_planning_systems1` FOREIGN KEY (`facilities_has_planning_systems_planning_systems_ps_id`) REFERENCES `facilities_has_planning_systems` (`planning_systems_ps_id`),
+  CONSTRAINT `fk_facility_stated_phantoms1` FOREIGN KEY (`phantoms_phantom_id`) REFERENCES `phantoms` (`phantom_id`),
+  CONSTRAINT `fk_facility_stated_planning_system_algorithm1` FOREIGN KEY (`planning_system_algorithm_algorithm_id`) REFERENCES `planning_system_algorithm` (`algorithm_id`),
+  CONSTRAINT `fk_facility_stated_rename_facilities_has_linacs1` FOREIGN KEY (`facilities_has_linacs_linac_id`) REFERENCES `facilities_has_linacs` (`linac_id`),
+  CONSTRAINT `fk_facility_stated_rename_trs_398_method1` FOREIGN KEY (`trs_398_method_method_id`) REFERENCES `trs_398_method` (`method_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `linac_models`
+--
+
+DROP TABLE IF EXISTS `linac_models`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `linac_models` (
+  `linac_model_id` int NOT NULL,
+  `manufacturer` varchar(45) DEFAULT NULL,
+  `model` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`linac_model_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `phantoms`
+--
+
+DROP TABLE IF EXISTS `phantoms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `phantoms` (
+  `phantom_id` int NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`phantom_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `planning_system_algorithm`
+--
+
+DROP TABLE IF EXISTS `planning_system_algorithm`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `planning_system_algorithm` (
+  `algorithm_id` int NOT NULL,
+  `algorithm_name` varchar(45) NOT NULL,
+  PRIMARY KEY (`algorithm_id`),
+  UNIQUE KEY `algorithm_name_UNIQUE` (`algorithm_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `planning_systems`
+--
+
+DROP TABLE IF EXISTS `planning_systems`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `planning_systems` (
+  `ps_id` int NOT NULL,
+  `manufacturer` varchar(45) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `version` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`ps_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `points`
+--
+
+DROP TABLE IF EXISTS `points`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `points` (
+  `point` int NOT NULL,
+  `position` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`point`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `reports`
+--
+
+DROP TABLE IF EXISTS `reports`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reports` (
+  `report_id` int NOT NULL,
+  `reporting_date` date DEFAULT NULL,
+  `report_document` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`report_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `results`
+--
+
+DROP TABLE IF EXISTS `results`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `results` (
+  `result_id` int NOT NULL,
+  `points_point` int NOT NULL,
+  `beams_beam_id` int NOT NULL,
+  `cases_case_id` int NOT NULL,
+  `audits_audit_id` int NOT NULL,
+  `audits_revision_num` int NOT NULL,
+  `energy_level_energy_level` varchar(45) NOT NULL,
+  `measured_current` decimal(65,30) DEFAULT NULL,
+  `predicited_current` decimal(65,30) DEFAULT NULL,
+  `variation_pc` decimal(65,3) DEFAULT NULL,
+  `planning_system_algorithm_algorithm_id` int NOT NULL,
+  PRIMARY KEY (`result_id`,`points_point`,`beams_beam_id`,`cases_case_id`,`audits_audit_id`,`audits_revision_num`,`energy_level_energy_level`,`planning_system_algorithm_algorithm_id`),
+  KEY `fk_results_points1_idx` (`points_point`),
+  KEY `fk_results_beams1_idx` (`beams_beam_id`),
+  KEY `fk_results_cases1_idx` (`cases_case_id`),
+  KEY `fk_results_audits1_idx` (`audits_audit_id`,`audits_revision_num`),
+  KEY `fk_results_energy_level1_idx` (`energy_level_energy_level`),
+  KEY `fk_results_planning_system_algorithm1_idx` (`planning_system_algorithm_algorithm_id`),
+  CONSTRAINT `fk_results_audits1` FOREIGN KEY (`audits_audit_id`, `audits_revision_num`) REFERENCES `audits` (`audit_id`, `revision_num`),
+  CONSTRAINT `fk_results_beams1` FOREIGN KEY (`beams_beam_id`) REFERENCES `beams` (`beam_id`),
+  CONSTRAINT `fk_results_cases1` FOREIGN KEY (`cases_case_id`) REFERENCES `cases` (`case_id`),
+  CONSTRAINT `fk_results_energy_level1` FOREIGN KEY (`energy_level_energy_level`) REFERENCES `energy_level` (`energy_level`),
+  CONSTRAINT `fk_results_planning_system_algorithm1` FOREIGN KEY (`planning_system_algorithm_algorithm_id`) REFERENCES `planning_system_algorithm` (`algorithm_id`),
+  CONSTRAINT `fk_results_points1` FOREIGN KEY (`points_point`) REFERENCES `points` (`point`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `trs_398_method`
+--
+
+DROP TABLE IF EXISTS `trs_398_method`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `trs_398_method` (
+  `method_id` int NOT NULL,
+  `description` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`method_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `versions`
+--
+
+DROP TABLE IF EXISTS `versions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `versions` (
+  `version` int NOT NULL,
+  `date_created` date DEFAULT NULL,
+  `comments` blob,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping routines for database 'AA_AUDIT'
+--
+
+--
+-- Final view structure for view `audits_v`
+--
+
+/*!50001 DROP VIEW IF EXISTS `audits_v`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `audits_v` AS select `audits`.`audit_id` AS `audit_id`,`audits`.`revision_num` AS `revision_num`,`audits`.`versions_version` AS `versions_version`,`audits`.`audit_date` AS `audit_date`,`audits`.`facilities_facility_id` AS `facilities_facility_id`,`facilities`.`name` AS `facility_name`,`facility_operator`.`name` AS `facility_operator_name`,`facility_operator`.`operator_id` AS `operator_id`,`reports`.`report_id` AS `report_id`,`reports`.`reporting_date` AS `reporting_date` from ((((`audits` join `facilities` on((`audits`.`facilities_facility_id` = `facilities`.`facility_id`))) join `facility_operator` on((`facilities`.`facility_operator_operator_id` = `facility_operator`.`operator_id`))) join `audits_has_reports` on((`audits`.`audit_id` = `audits_has_reports`.`audits_audit_id`))) join `reports` on((`audits`.`audit_id` = `audits_has_reports`.`audits_audit_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2020-09-30  8:59:01
