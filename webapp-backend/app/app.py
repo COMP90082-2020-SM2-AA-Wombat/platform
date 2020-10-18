@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 def input_table() -> List[Dict]:
     config = {
-        'user': 'user',
+        'user': 'root',
         'password': 'password',
         'host': 'db',
         'port': '3306',
