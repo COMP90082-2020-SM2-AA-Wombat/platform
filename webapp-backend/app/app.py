@@ -1,5 +1,6 @@
 from typing import List, Dict
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response,abort,make_response
+import requests
 import json
 import os
 from flask_cors import CORS
@@ -9,6 +10,7 @@ import sys
 import math
 import MySQLdb
 import  mysql.connector
+from middleware import auth_decorator 
 
 app = Flask(__name__)
 CORS(app)
@@ -20,22 +22,25 @@ def index() -> str:
     return "hello world"
 
 @app.route("/csv", methods=["POST"])
+@auth_decorator()
 def csvInjestion() -> str:
     files = request.files
+    print("hello")
+    print(files, "asd")
     db.connection.start_transaction()
     try:
         for key in files:
             if key.endswith(".csv"):
                 df_csv = pd.read_csv(files[key], dtype=object)
                 if "results" in key:
-                    print("hel;lo")
                     process_results_csv(df_csv)
                 elif "facility_stated" in key:
                     process_facility_stated_csv(df_csv)
             elif key.endswith(".json"):
                 process_meta_data(files[key])
             else:
-                print("invalid")
+                return create_error_400("Invalid file. Files must include either: '.json', or csvs with 'results' or 'facility_stated' in the filenames")
+            
         db.connection.commit()
     except mysql.connector.Error as err:
         print(err)
@@ -44,7 +49,7 @@ def csvInjestion() -> str:
         print("Message", err.msg)
         db.connection.rollback()
         return err.msg
-    return "hellsasasdao asdworld"
+    return make_response({"message": "Successfully added data"}, 200)
 
 def process_results_csv(results_df):
     columns = list(results_df.columns)
@@ -76,24 +81,22 @@ def process_facility_stated_csv(f_df):
                 valueList.append(result[column])
         dataToInsert.append(tuple(valueList))
     stmt = "INSERT INTO facility_stated (" + ", ".join(columns) + ") VALUES ( " + ("%s," * len(columns))[:-1] + ")"
-    print(stmt)
-    print(dataToInsert)
     cursor.executemany(stmt, dataToInsert)
     cursor.close()
     return
 
 def process_meta_data(meta_json):
     meta_data = json.load(meta_json)
-    print(meta_data)
-    return addBulkFields(meta_data, False)
-
+    addBulkFields(meta_data, False)
+    return
 
 @app.route("/fields", methods=["POST"])
+@auth_decorator()
 def insert_field():
     updateOrReplace = request.args.get('updateOrReplace') == "true"
     body = request.get_json()
     if necessaryFieldsMissing(body):
-        return "failed"
+        return create_error_400("Missing field: 'table', 'fields' or 'values'")
     cursor = db.connection.cursor(buffered=True)
     try:
         insertTableFields(body, cursor, updateOrReplace)
@@ -103,41 +106,31 @@ def insert_field():
         print("SQLSTATE", err.sqlstate)
         print("Message", err.msg)
         db.connection.rollback()
-        resp = Response(json.dumps({
-            "message":err.msg}), mimetype='application/json')
-        resp.status_code = 400
-        return resp
-    return "hello"
+        return create_error_400(err.msg)
+    return make_response({"message": "Successfully added field data"}, 200)
 
 @app.route("/bulk-fields", methods=["POST"])
+@auth_decorator()
 def bulk_fields():
     updateOrReplace = request.args.get('updateOrReplace') == "true"
     body = request.get_json()
     db.connection.start_transaction()
-
-    return addBulkFields(body, updateOrReplace)
+    addBulkFields(body, updateOrReplace)
+    return make_response({"message": "Successfully added bulk data"}, 200)
 
 def addBulkFields(body, updateOrReplace):
-    print("asd")
     cursor = db.connection.cursor(buffered=True)
     set_of_tables = set()
     list_of_tables = []
     for item in body:
-        print(item)
         if necessaryFieldsMissing(item):
             db.connection.rollback()
-            resp = Response(json.dumps({
-            "message":"Fields missing. Make sure you are using the correct payload"}), mimetype='application/json')
-            resp.status_code = 400
-            print("asddaddd")
-            return resp
+            return create_error_400("Missing field: 'table', 'fields' or 'values'")
         set_of_tables.add(item["table"])
         list_of_tables.append(item["table"])
     if not (len(list_of_tables) == len(set_of_tables)):
         db.connection.rollback()
-        return "You put duplicate table insertions"
-
-    print(body)
+        return create_error_400("You put duplicate table insertions")
     for item in body:
         try:
             insertTableFields(item, cursor, updateOrReplace)
@@ -147,12 +140,13 @@ def addBulkFields(body, updateOrReplace):
             print("SQLSTATE", err.sqlstate)
             print("Message", err.msg)
             db.connection.rollback()
-            return err.msg
+            return create_error_400(err.msg)
         
     db.connection.commit()
-    return "donzo"
+    return 
 
 @app.route("/bulk-tables", methods=["POST"])
+@auth_decorator()
 def bulk():
     updateOrReplace = request.args.get('updateOrReplace') == "true"
     body = request.get_json()
@@ -176,13 +170,13 @@ def bulk():
         for insertion in tableItem["insertions"]:
             if necessaryFieldsMissingNotIncludingTable(insertion):
                 db.connection.rollback()
-                return "Incorrect format" 
+                return create_error_400("Missing field: 'fields' or 'values'")
         set_of_tables.add(tableItem["table"])
         list_of_tables.append(tableItem["table"])
 
     if not (len(list_of_tables) == len(set_of_tables)):
         db.connection.rollback()
-        return "You put duplicate table insertions"
+        return create_error_400("You put duplicate table insertions")
     for tableItem in body:
         for insertion in tableItem["insertions"]:
             try:    
@@ -197,15 +191,14 @@ def bulk():
                 print("SQLSTATE", err.sqlstate)
                 print("Message", err.msg)
                 db.connection.rollback()
-                return err.msg
+                return create_error_400(err.msg)
     db.connection.commit()
-    return "donzo"
+    return make_response({"message": "Successfully added bulk data"}, 200)
 
 
 def insertTableFields(body, cursor, updateOrReplace):
     vals = ["'" + val + "'" for  val in body["values"]]
     stmt = f'{"REPLACE" if updateOrReplace else "INSERT"} INTO {body["table"]} ({", ".join(body["fields"])}) VALUES ({", ".join(vals)});'
-    print(stmt)
     cursor.execute(stmt)
     return
 
@@ -220,9 +213,23 @@ def necessaryFieldsMissingNotIncludingTable(body):
     return (not ("fields" in body and isinstance(body["fields"], list)) or not ("values" in body and isinstance(body["values"], list))  or not(len(body["fields"]) == len(body["values"])) )
 
 @app.route("/table-fields", methods=["GET"])
+@auth_decorator()
 def getAllTableAndFields():
     return db.tableWithFields
 
+
+@app.route("/login", methods=["POST"])
+def login():
+    user_details = request.get_json()
+    url = "http://localhost:8000/hub/api/authorizations/token"
+    headers = {'content-type': 'application/json'}
+    res = requests.post(url, json=user_details, headers=headers)
+    if (not res.ok):
+        abort(make_response(jsonify(message="Access Forbidden"), 401))
+    return make_response(res.json(),200)
+
+def create_error_400(errorMessage):
+    abort(make_response(jsonify(message=errorMessage), 400))
 
 
 if __name__ == '__main__':

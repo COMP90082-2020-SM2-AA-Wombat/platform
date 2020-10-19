@@ -4,9 +4,11 @@ import TextField from "@material-ui/core/TextField";
 import { Button } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import axios from "axios";
+import { useAuthStateContext } from "../../context/authProvider";
 
 const FieldInsert = ({ table, data }) => {
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthStateContext();
 
   const [fieldsWithValues, setFieldsWithValues] = useState({});
   const onSubmit = useCallback(async () => {
@@ -17,6 +19,10 @@ const FieldInsert = ({ table, data }) => {
           baseURL: process.env.REACT_APP_API_DNS,
           url: "/fields",
           method: "post",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
           data: {
             table,
             fields,

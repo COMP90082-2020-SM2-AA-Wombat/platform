@@ -5,18 +5,23 @@ import axios from "axios";
 import { useSnackbar } from "notistack";
 import Dropdown from "../../components/Dropdown";
 import FieldInsert from "../../components/FieldInsert";
+import { useAuthStateContext } from "../../context/authProvider";
 
 const InsertionPage = () => {
   const [tableWithFields, setTableWithFields] = useState({});
   const { enqueueSnackbar } = useSnackbar();
   const [dropDownValue, setDropDownValue] = useState("");
-
+  const { user } = useAuthStateContext();
   useEffect(() => {
     async function fetchData() {
       const response = await axios({
         baseURL: process.env.REACT_APP_API_DNS,
         url: "/table-fields",
         method: "get",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
       });
       if (response.status !== 200) {
         enqueueSnackbar("Getting table with fields failed. Please refresh page to try again", {

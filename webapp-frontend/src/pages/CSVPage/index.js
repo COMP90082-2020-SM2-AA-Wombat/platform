@@ -59,7 +59,8 @@ const CSVPage = () => {
         variant: "success",
       });
     } catch (e) {
-      enqueueSnackbar("Upload of files failed, try again.", {
+      console.log(e);
+      enqueueSnackbar(e.response?.data?.message || "Upload failed, please try again", {
         variant: "error",
       });
     }
@@ -147,6 +148,7 @@ const CSVPage = () => {
         style={{ marginTop: "1rem" }}
         endIcon={<Icon>send</Icon>}
         onClick={handleSubmission}
+        disabled={!csvsState.length}
       >
         Send
       </Button>

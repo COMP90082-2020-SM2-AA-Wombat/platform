@@ -25,7 +25,6 @@ class Db():
             attrCursor.execute(f'SHOW COLUMNS FROM {settings.DATABASE_NAME}.{table};')
 
             for columnDetails in attrCursor.fetchall():
-                print(columnDetails)
                 self.tableWithFields[table].append({
                     "field":columnDetails[0],
                     "type":columnDetails[1].decode('UTF-8')
