@@ -25,8 +25,6 @@ def index() -> str:
 @auth_decorator()
 def csvInjestion() -> str:
     files = request.files
-    print("hello")
-    print(files, "asd")
     db.connection.start_transaction()
     try:
         for key in files:
@@ -48,7 +46,7 @@ def csvInjestion() -> str:
         print("SQLSTATE", err.sqlstate)
         print("Message", err.msg)
         db.connection.rollback()
-        return err.msg
+        return create_error_400(err.msg)
     return make_response({"message": "Successfully added data"}, 200)
 
 def process_results_csv(results_df):
@@ -152,7 +150,7 @@ def bulk():
     body = request.get_json()
     
     if not isinstance(body, list):
-        return "failed"
+        return create_error_400("Invalid Payload")
     db.connection.start_transaction()
     cursor = db.connection.cursor(buffered=True)
     set_of_tables = set()
@@ -160,13 +158,13 @@ def bulk():
     for tableItem in body:
         if not isinstance(tableItem, dict):
             db.connection.rollback()
-            return "Incorrect format"
+            return create_error_400("Invalid Payload")
         if ("table" not in tableItem) or ("insertions" not in tableItem):
             db.connection.rollback()
-            return "Incorrect format"
+            return create_error_400("Invalid Payload")
         if not isinstance(tableItem["insertions"], list):
             db.connection.rollback()
-            return "Incorrect format"
+            return create_error_400("Invalid Payload")
         for insertion in tableItem["insertions"]:
             if necessaryFieldsMissingNotIncludingTable(insertion):
                 db.connection.rollback()
@@ -215,7 +213,7 @@ def necessaryFieldsMissingNotIncludingTable(body):
 @app.route("/table-fields", methods=["GET"])
 @auth_decorator()
 def getAllTableAndFields():
-    return db.tableWithFields
+    return make_response(db.tableWithFields, 200)
 
 
 @app.route("/login", methods=["POST"])

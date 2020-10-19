@@ -48,14 +48,14 @@ const Main = () => {
               <NavBar style={{ width: "auto" }} />
             </div>
 
-            <Route exact path="/csv">
+            <Route exact path="/csv-json">
               <CSVPage />
             </Route>
             <Route exact path="/insertions">
               <InsertionPage />
             </Route>
             <Route path="/">
-              <Redirect to="/csv" />
+              <Redirect to="/csv-json" />
             </Route>
           </>
         )}

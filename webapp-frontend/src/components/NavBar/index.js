@@ -14,11 +14,11 @@ export default function NavBar() {
   return (
     <BottomNavigation value={location.pathname.split("/")[1]} className={classes.navigation}>
       <BottomNavigationAction
-        label="CSV"
+        label="CSV/JSON"
         value="csv"
         icon={<AssessmentIcon />}
         component={Link}
-        to="/csv"
+        to="/csv-json"
       />
       <BottomNavigationAction
         label="Insertions"

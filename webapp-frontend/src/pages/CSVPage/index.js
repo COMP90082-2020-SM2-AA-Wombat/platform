@@ -59,7 +59,6 @@ const CSVPage = () => {
         variant: "success",
       });
     } catch (e) {
-      console.log(e);
       enqueueSnackbar(e.response?.data?.message || "Upload failed, please try again", {
         variant: "error",
       });
@@ -68,9 +67,7 @@ const CSVPage = () => {
 
   useEffect(() => {
     if (csvsState.length > 0 && !(csvsState[csvIndx - 1]?.csv || csvsState[csvIndx - 1]?.json)) {
-      console.log(csvsState[csvIndx - 1].file, csvsState[csvIndx - 1].name);
       if (csvsState[csvIndx - 1].file?.type === "application/json") {
-        console.log("application");
         csvsState[csvIndx - 1].file.text().then((res) => {
           const jsonifiedRes = JSON.parse(res);
           const newCsvState = [...csvsState];
