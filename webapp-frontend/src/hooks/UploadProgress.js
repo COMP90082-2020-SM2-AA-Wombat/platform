@@ -6,10 +6,8 @@ export const useUploadFiles = () => {
   const [error, setError] = useState(false);
 
   const uploadFiles = async (files) => {
-    console.log("hasd");
     if (files.length) {
       const formPayload = new FormData();
-      console.log(files);
       files.forEach((file) => {
         formPayload.append(file.file.name, file.file);
       });

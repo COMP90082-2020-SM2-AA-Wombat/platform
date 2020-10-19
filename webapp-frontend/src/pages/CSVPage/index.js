@@ -47,6 +47,7 @@ const CSVPage = () => {
     }
     e.target.value = ""; // to clear the current file
   };
+
   const handleChange = async (event, value) => {
     setCsvIndx(value);
   };
@@ -65,51 +66,81 @@ const CSVPage = () => {
   };
 
   useEffect(() => {
-    if (csvsState.length > 0 && !csvsState[csvIndx - 1]?.csv) {
-      Papa.parse(csvsState[csvIndx - 1].file, {
-        ...papaparseOptions,
-        complete: function (results, file) {
+    if (csvsState.length > 0 && !(csvsState[csvIndx - 1]?.csv || csvsState[csvIndx - 1]?.json)) {
+      console.log(csvsState[csvIndx - 1].file, csvsState[csvIndx - 1].name);
+      if (csvsState[csvIndx - 1].file?.type === "application/json") {
+        console.log("application");
+        csvsState[csvIndx - 1].file.text().then((res) => {
+          const jsonifiedRes = JSON.parse(res);
           const newCsvState = [...csvsState];
           newCsvState[csvIndx - 1] = {
             ...csvsState[csvIndx - 1],
-            csv: results.data,
+            json: jsonifiedRes,
           };
           setCsvsState(newCsvState);
-        },
-      });
+        });
+      } else {
+        Papa.parse(csvsState[csvIndx - 1].file, {
+          ...papaparseOptions,
+          complete: function (results, file) {
+            const newCsvState = [...csvsState];
+            newCsvState[csvIndx - 1] = {
+              ...csvsState[csvIndx - 1],
+              csv: results.data,
+            };
+            setCsvsState(newCsvState);
+          },
+        });
+      }
     }
   }, [csvIndx, setCsvsState, csvsState, setCsvIndx]);
 
   return (
     <Container style={{ display: "flex", flexDirection: "column" }}>
-      <h1 style={{ textAlign: "center" }}>Audits</h1>
-      <input
-        type="file"
-        id="input"
-        multiple
-        onChange={handleAttachFile}
-        accept=".csv"
-      />
-
+      <span
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          marginTop: "0.5rem",
+        }}
+      >
+        <Button variant="contained" component="label" style={{ width: "20rem" }}>
+          Upload Files
+          <input
+            type="file"
+            onChange={handleAttachFile}
+            multiple
+            style={{ display: "none" }}
+            accept=".csv, .json"
+          />
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          style={{ width: "20rem" }}
+          onClick={() => {
+            setCsvsState([]);
+            setCsvIndx(1);
+          }}
+        >
+          Clear Files
+        </Button>
+      </span>
       {csvsState.length > 0 ? (
-        <FileCycler
-          handleChange={handleChange}
-          csvs={csvsState}
-          csvIndx={csvIndx}
-        />
+        <FileCycler handleChange={handleChange} csvs={csvsState} csvIndx={csvIndx} />
       ) : (
         <h4 style={{ textAlign: "center" }}>No csvs selected</h4>
       )}
-      {/* <div>
-        <span>
-          <Dropdown />
-          <Dropdown />
-          <Dropdown />
-          <Dropdown />
-          <Dropdown />
-        </span>
-      </div> */}
-      <CSVTable csv={csvsState[csvIndx - 1]?.csv || []} />
+      {csvsState[csvIndx - 1]?.csv ? (
+        <CSVTable csv={csvsState[csvIndx - 1]?.csv || []} />
+      ) : csvsState[csvIndx - 1]?.json ? (
+        <div style={{ height: "60vh" }}>
+          {JSON.stringify(csvsState[csvIndx - 1]?.json, null, 4)}
+        </div>
+      ) : (
+        <CSVTable csv={csvsState[csvIndx - 1]?.csv || []} />
+      )}
       <Button
         variant="contained"
         color="primary"
@@ -119,7 +150,6 @@ const CSVPage = () => {
       >
         Send
       </Button>
-      {console.log(error)}
       {loading && !error && <Loading />}
     </Container>
   );

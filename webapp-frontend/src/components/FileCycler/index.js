@@ -15,15 +15,11 @@ const FileCycler = ({ csvs, handleChange, csvIndx }) => {
   const classes = useStyles();
 
   return (
-    <div
-      className={classes.root}
-      style={{ paddingBottom: "1rem", margin: "auto" }}
-    >
+    <div className={classes.root} style={{ paddingBottom: "1rem", margin: "auto" }}>
       <Pagination
         page={csvIndx}
         count={Object.values(csvs).length}
         renderItem={(item) => {
-          console.log(item);
           return (
             <PaginationItem
               {...item}

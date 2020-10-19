@@ -1,8 +1,10 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import CSVPage from "./pages/CSVPage";
+import NavBar from "./components/NavBar";
 import { SnackbarProvider } from "notistack";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import InsertionPage from "./pages/InsertionPage";
 
 const styles = {
   success: { backgroundColor: "purple" },
@@ -22,7 +24,30 @@ function App() {
       }}
       maxSnack={3}
     >
-      <CSVPage />
+      <BrowserRouter>
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: true,
+          }}
+        >
+          <h1>Audits</h1>
+          <NavBar style={{ width: "auto" }} />
+        </div>
+        <Switch>
+          <Route exact path="/csv">
+            <CSVPage />
+          </Route>
+          <Route exact path="/insertions">
+            <InsertionPage />
+          </Route>
+          <Route path="/">
+            <Redirect to="/csv" />
+          </Route>
+        </Switch>
+      </BrowserRouter>
     </SnackbarProvider>
   );
 }

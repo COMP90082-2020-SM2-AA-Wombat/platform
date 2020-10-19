@@ -1,0 +1,8 @@
+import os
+
+DB_USERNAME="user"
+DB_PASSWORD="password"
+DB_HOST="localhost"
+DATABASE_NAME="AA_AUDIT"
+MYSQL_ROOT_PASSWORD="password"
+DB_PORT=3306
