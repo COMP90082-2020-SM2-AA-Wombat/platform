@@ -14,7 +14,6 @@ from middleware import auth_decorator
 
 app = Flask(__name__)
 CORS(app)
-
 db = Db()
 
 @app.route('/')
@@ -38,7 +37,6 @@ def csvInjestion() -> str:
                 process_meta_data(files[key])
             else:
                 return create_error_400("Invalid file. Files must include either: '.json', or csvs with 'results' or 'facility_stated' in the filenames")
-            
         db.connection.commit()
     except mysql.connector.Error as err:
         print(err)
