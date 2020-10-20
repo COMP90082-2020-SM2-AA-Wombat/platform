@@ -25,19 +25,19 @@ services:
             - backend_network
             - jupyterhub_network
 
-    webapp-backend:
-        build: ./webapp-backend
-        restart: always
-        container_name: webapp-backend
-        volumes:
-            - ./webapp-backend/app:/app
-        ports: 
-            - "5000:5000"
-        networks:
-            - frontend_network
-            - backend_network
-        depends_on:
-            - db
+    # webapp-backend:
+    #     build: ./webapp-backend
+    #     restart: always
+    #     container_name: webapp-backend
+    #     volumes:
+    #         - ./webapp-backend/app:/app
+    #     ports: 
+    #         - "5000:5000"
+    #     networks:
+    #         - frontend_network
+    #         - backend_network
+    #     depends_on:
+    #         - db
 
     # webapp-frontend:
     #     build: ./webapp-frontend
