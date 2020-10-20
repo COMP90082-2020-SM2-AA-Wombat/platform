@@ -8,13 +8,15 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
+import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles({
   root: {
     width: "100%",
+    position: "relative",
   },
   container: {
-    maxHeight: 440,
+    maxHeight: "65vh",
   },
 });
 
@@ -29,7 +31,6 @@ const CSVTable = (props) => {
     const { csv } = props;
     if (csv.length > 0) {
       const firstCsv = csv[0];
-      console.log(firstCsv);
       setColumns(
         Object.keys(firstCsv).map((header) => {
           return { id: header, label: header, minWidth: 100 };
@@ -54,11 +55,11 @@ const CSVTable = (props) => {
   };
 
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.root} style={{ height: "70vh" }}>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
-            <TableRow>
+            <TableRow key={uuidv4()}>
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
@@ -75,7 +76,7 @@ const CSVTable = (props) => {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={uuidv4()}>
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
@@ -93,6 +94,7 @@ const CSVTable = (props) => {
         </Table>
       </TableContainer>
       <TablePagination
+        style={{ position: "absolute", bottom: 0, right: 0 }}
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
         count={rows.length}
