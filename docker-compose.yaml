@@ -38,16 +38,19 @@ services:
             - backend_network
         depends_on:
             - db
+            - jupyterhub
 
-    # webapp-frontend:
-    #     build: ./webapp-frontend
-    #     image: webapp-frontend
-    #     ports: 
-    #         - "5000:5001"
-    #     networks:
-    #         - frontend_network
-    #     depends_on:
-    #         - webapp-backend
+    webapp-frontend:
+        build: ./webapp-frontend
+        # volumes:
+        #     - ./webapp-frontend:/.
+        image: webapp-frontend
+        ports: 
+            - "3000:3000"
+        networks:
+            - frontend_network
+        depends_on:
+            - webapp-backend
     
     jupyterhub:
         build: ./jupyterhub

@@ -4,9 +4,9 @@ COPY ./requirements.txt /requirements.txt
 
 RUN pip install --upgrade pip && pip3 install -r requirements.txt
 
-EXPOSE 5000
-
 WORKDIR /app
+
+EXPOSE 5000
 
 ENTRYPOINT ["python"]
 

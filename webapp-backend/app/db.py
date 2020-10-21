@@ -13,7 +13,7 @@ class Db():
             'host': settings.DB_HOST,
             'port': settings.DB_PORT,
             'database': settings.DATABASE_NAME,
-            'auth_plugin':'mysql_native_password'
+            'auth_plugin': 'mysql_native_password'
         }
         self.connection = mysql.connector.connect(**self.config, autocommit=True)
         cursor = self.connection.cursor(buffered=True)
