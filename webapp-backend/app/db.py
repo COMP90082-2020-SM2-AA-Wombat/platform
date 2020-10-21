@@ -9,7 +9,6 @@ class Db():
         self.config = {
             'user': settings.DB_USERNAME,
             'password': settings.DB_PASSWORD,
-            # "host": "db",
             'host': settings.DB_HOST,
             'port': settings.DB_PORT,
             'database': settings.DATABASE_NAME,
