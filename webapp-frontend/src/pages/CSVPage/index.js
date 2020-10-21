@@ -12,6 +12,8 @@ import FileCycler from "../../components/FileCycler";
 import { useUploadFiles } from "../../hooks/UploadProgress";
 import Loading from "../../components/Loading";
 import { useSnackbar } from "notistack";
+import JSONPretty from "react-json-pretty";
+import "react-json-pretty/themes/monikai.css";
 
 const papaparseOptions = {
   header: true,
@@ -26,7 +28,6 @@ const CSVPage = () => {
   const [csvIndx, setCsvIndx] = React.useState(1);
   const [uploadFiles, loading, error] = useUploadFiles();
   const handleAttachFile = (e) => {
-    // could do some validation for the attached file here, for example on size
     try {
       const files = e.target.files;
       let newState = [...csvsState];
@@ -128,14 +129,20 @@ const CSVPage = () => {
       {csvsState.length > 0 ? (
         <FileCycler handleChange={handleChange} csvs={csvsState} csvIndx={csvIndx} />
       ) : (
-        <h4 style={{ textAlign: "center" }}>No csvs selected</h4>
+        <h4 style={{ textAlign: "center" }}>No files currently added</h4>
       )}
       {csvsState[csvIndx - 1]?.csv ? (
         <CSVTable csv={csvsState[csvIndx - 1]?.csv || []} />
       ) : csvsState[csvIndx - 1]?.json ? (
-        <div style={{ height: "60vh" }}>
-          {JSON.stringify(csvsState[csvIndx - 1]?.json, null, 4)}
-        </div>
+        <Container
+          style={{
+            overflow: "scroll",
+            height: "60vh",
+            display: "block",
+          }}
+        >
+          <JSONPretty id="json-pretty" data={csvsState[csvIndx - 1]?.json} />
+        </Container>
       ) : (
         <CSVTable csv={csvsState[csvIndx - 1]?.csv || []} />
       )}

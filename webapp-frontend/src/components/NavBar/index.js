@@ -7,14 +7,20 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import AddIcon from "@material-ui/icons/Add";
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
-import { Button } from "@material-ui/core";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
+import { useAuthStateContext } from "../../context/authProvider";
 export default function NavBar() {
   const location = useLocation();
   const classes = useStyles();
+  const { user } = useAuthStateContext();
 
   return (
-    <BottomNavigation value={location.pathname.split("/")[1]} className={classes.navigation}>
+    <BottomNavigation
+      value={location.pathname.split("/")[1]}
+      showLabels
+      className={classes.navigation}
+    >
       <BottomNavigationAction
         label="CSV/JSON"
         value="csv-json"
@@ -34,6 +40,13 @@ export default function NavBar() {
         icon={<LibraryBooksIcon />}
         onClick={() => window.location.assign(process.env.REACT_APP_JUPTYER)}
       />
+      {user?.details?.admin && (
+        <BottomNavigationAction
+          label="JuptyerHub Authorizer"
+          icon={<LockOpenIcon />}
+          onClick={() => window.location.assign(`${process.env.REACT_APP_JUPTYER}/hub/authorize`)}
+        />
+      )}
       <BottomNavigationAction
         label="Logout"
         icon={<ExitToAppIcon />}

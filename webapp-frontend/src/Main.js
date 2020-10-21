@@ -6,7 +6,6 @@ import CSVPage from "./pages/CSVPage";
 import NavBar from "./components/NavBar";
 import { useAuthStateContext } from "./context/authProvider";
 import Profile from "./components/Profile";
-import { Avatar, IconButton } from "@material-ui/core";
 
 const Main = () => {
   const { user } = useAuthStateContext();

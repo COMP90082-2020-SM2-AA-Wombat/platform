@@ -70,7 +70,7 @@ def process_results_csv(results_df):
             else:
                 valueList.append(result[column])
         dataToInsert.append(tuple(valueList))
-    stmt = "INSERT IGNORE INTO results (" + ", ".join(columns) + ") VALUES ( " + ("%s," * len(columns))[:-1] + ")"
+    stmt = "INSERT INTO results (" + ", ".join(columns) + ") VALUES ( " + ("%s," * len(columns))[:-1] + ")"
     cursor.executemany(stmt, dataToInsert)
     cursor.close()
     return
@@ -87,7 +87,9 @@ def process_facility_stated_csv(f_df):
             else:
                 valueList.append(result[column])
         dataToInsert.append(tuple(valueList))
+    
     stmt = "INSERT INTO facility_stated (" + ", ".join(columns) + ") VALUES ( " + ("%s," * len(columns))[:-1] + ")"
+    print(stmt)
     cursor.executemany(stmt, dataToInsert)
     cursor.close()
     return
