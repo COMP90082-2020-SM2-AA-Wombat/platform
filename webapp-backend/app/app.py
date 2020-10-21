@@ -217,7 +217,7 @@ def getAllTableAndFields():
 @app.route("/login", methods=["POST"])
 def login():
     user_details = request.get_json()
-    url = "http://localhost:8000/hub/api/authorizations/token"
+    url = "http://jupyterhub:8000/hub/api/authorizations/token"
     headers = {'content-type': 'application/json'}
     res = requests.post(url, json=user_details, headers=headers)
     if (not res.ok):

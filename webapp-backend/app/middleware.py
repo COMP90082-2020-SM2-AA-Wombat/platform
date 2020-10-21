@@ -14,7 +14,7 @@ def auth_decorator():
             if not token:
                 abort(make_response(jsonify(message="Access Forbidden"), 401))
 
-            url = "http://localhost:8000/hub/api/info"
+            url = "http://jupyterhub:8000/hub/api/info"
             headers = {
                 "content-type": "application/json",
                 "Authorization": token
