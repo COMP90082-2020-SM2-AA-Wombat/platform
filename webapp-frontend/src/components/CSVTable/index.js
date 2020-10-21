@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     position: "relative",
   },
   container: {
-    maxHeight: "65vh",
+    maxHeight: "55vh",
   },
 });
 
@@ -42,6 +42,9 @@ const CSVTable = (props) => {
           return { ...row };
         })
       );
+    } else {
+      setColumns([]);
+      setRows([]);
     }
   }, [props.csv]);
 
@@ -55,7 +58,7 @@ const CSVTable = (props) => {
   };
 
   return (
-    <Paper className={classes.root} style={{ height: "70vh" }}>
+    <Paper className={classes.root} style={{ height: "60vh" }}>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -72,24 +75,20 @@ const CSVTable = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={uuidv4()}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              return (
+                <TableRow hover role="checkbox" tabIndex={-1} key={uuidv4()}>
+                  {columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.format && typeof value === "number" ? column.format(value) : value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

@@ -1,15 +1,14 @@
 import { useCallback, useState } from "react";
 import axios from "axios";
+import { useAuthStateContext } from "../context/authProvider";
 
 export const useUploadFiles = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-
+  const { user } = useAuthStateContext();
   const uploadFiles = async (files) => {
-    console.log("hasd");
     if (files.length) {
       const formPayload = new FormData();
-      console.log(files);
       files.forEach((file) => {
         formPayload.append(file.file.name, file.file);
       });
@@ -19,6 +18,10 @@ export const useUploadFiles = () => {
           baseURL: process.env.REACT_APP_API_DNS,
           url: "/csv",
           method: "post",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
           data: formPayload,
         });
         setLoading(false);
@@ -29,7 +32,7 @@ export const useUploadFiles = () => {
         return { data: res.data, status: res.status };
       } catch (e) {
         setError(true);
-        throw Error();
+        throw e;
       }
     }
   };
