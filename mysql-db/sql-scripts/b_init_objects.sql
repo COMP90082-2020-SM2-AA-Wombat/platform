@@ -1,9 +1,9 @@
-CREATE DATABASE  IF NOT EXISTS `AA_AUDIT` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `AA_AUDIT`;
+CREATE DATABASE  IF NOT EXISTS `aa_audit` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `aa_audit`;
 -- MySQL dump 10.13  Distrib 8.0.21, for macos10.15 (x86_64)
 --
 -- Host: localhost    Database: AA_AUDIT
--- ------------------------------------------------------
+-- --------------------------------------ç----------------
 -- Server version	8.0.21
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

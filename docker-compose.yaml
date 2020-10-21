@@ -10,8 +10,8 @@ services:
       - "3306:3306"
     # TO-DO: create jupyter analyst user and webapp user
     environment:
-      MYSQL_DATABASE: "AA_AUDIT"
-      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "aa_audit"
+      MYSQL_ROOT_PASSWORD: "root_password"
     volumes:
       # sql scripts will be run automatically only when volume is empty (ie initial startup)
       #TO-DO: debug issues in startup of db (see logs on startup)
@@ -22,7 +22,6 @@ services:
       - backend_network
       - jupyterhub_network
     command: --default-authentication-plugin=mysql_native_password
-
 
   webapp-backend:
     build: ./webapp-backend
@@ -91,5 +90,5 @@ networks:
   frontend_network:
   backend_network:
   jupyterhub_network:
-    # driver: bridge
-    # name: jupyterhub_network
+    driver: bridge
+    name: jupyterhub_network
