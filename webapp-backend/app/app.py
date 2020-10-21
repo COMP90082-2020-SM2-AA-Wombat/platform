@@ -25,18 +25,29 @@ def index() -> str:
 def csvInjestion() -> str:
     files = request.files
     db.connection.start_transaction()
+    order_of_files = {
+        "jsons": [],
+        "results": [],
+        "facilities": []
+    }
     try:
         for key in files:
             if key.endswith(".csv"):
                 df_csv = pd.read_csv(files[key], dtype=object)
                 if "results" in key:
-                    process_results_csv(df_csv)
+                    order_of_files["results"].append(df_csv)
                 elif "facility_stated" in key:
-                    process_facility_stated_csv(df_csv)
+                    order_of_files["facilities"].append(df_csv)
             elif key.endswith(".json"):
-                process_meta_data(files[key])
+                order_of_files["jsons"].append(files[key])
             else:
                 return create_error_400("Invalid file. Files must include either: '.json', or csvs with 'results' or 'facility_stated' in the filenames")
+        for json in order_of_files["jsons"]:
+            process_meta_data(json)
+        for results in order_of_files["results"]:
+            process_results_csv(results)
+        for facilities in order_of_files["facilities"]:
+            process_facility_stated_csv(facilities)
         db.connection.commit()
     except mysql.connector.Error as err:
         print(err)
