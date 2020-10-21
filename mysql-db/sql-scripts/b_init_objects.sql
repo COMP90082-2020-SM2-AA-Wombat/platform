@@ -1,9 +1,9 @@
-CREATE DATABASE  IF NOT EXISTS `AA_AUDIT` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `AA_AUDIT`;
+CREATE DATABASE  IF NOT EXISTS `aa_audit` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `aa_audit`;
 -- MySQL dump 10.13  Distrib 8.0.21, for macos10.15 (x86_64)
 --
 -- Host: localhost    Database: AA_AUDIT
--- ------------------------------------------------------
+-- --------------------------------------ç----------------
 -- Server version	8.0.21
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -120,7 +120,7 @@ DROP TABLE IF EXISTS `beams`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `beams` (
   `beam_id` int NOT NULL,
-  `descriptiotn` varchar(45) DEFAULT NULL,
+  `description` varchar(45) DEFAULT NULL,
   `direction` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`beam_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -291,7 +291,6 @@ CREATE TABLE `facility_stated` (
   `facilities_has_linacs_linac_id` varchar(45) NOT NULL,
   `trs_398_method_method_id` int NOT NULL,
   `amount` decimal(65,30) DEFAULT NULL,
-  `facilities_has_planning_systems_planning_system_id` varchar(45) NOT NULL,
   `facilities_has_cts_ct_id` varchar(45) NOT NULL,
   `energy_level_energy_level` varchar(45) NOT NULL,
   `planning_system_algorithm_algorithm_id` int NOT NULL,
@@ -299,7 +298,7 @@ CREATE TABLE `facility_stated` (
   `facilities_has_planning_systems_planning_systems_ps_id` int NOT NULL,
   `audits_audit_id` int NOT NULL,
   `audits_revision_num` int NOT NULL,
-  PRIMARY KEY (`facilities_has_linacs_linac_id`,`trs_398_method_method_id`,`facilities_has_planning_systems_planning_system_id`,`facilities_has_cts_ct_id`,`energy_level_energy_level`,`planning_system_algorithm_algorithm_id`,`phantoms_phantom_id`,`facilities_has_planning_systems_planning_systems_ps_id`,`audits_audit_id`,`audits_revision_num`),
+  PRIMARY KEY (`facilities_has_linacs_linac_id`,`trs_398_method_method_id`,`facilities_has_cts_ct_id`,`energy_level_energy_level`,`planning_system_algorithm_algorithm_id`,`phantoms_phantom_id`,`facilities_has_planning_systems_planning_systems_ps_id`,`audits_audit_id`,`audits_revision_num`),
   KEY `fk_facility_stated_rename_facilities_has_linacs1_idx` (`facilities_has_linacs_linac_id`),
   KEY `fk_facility_stated_rename_trs_398_method1_idx` (`trs_398_method_method_id`),
   KEY `fk_facility_stated_facilities_has_cts1_idx` (`facilities_has_cts_ct_id`),
@@ -318,6 +317,41 @@ CREATE TABLE `facility_stated` (
   CONSTRAINT `fk_facility_stated_rename_trs_398_method1` FOREIGN KEY (`trs_398_method_method_id`) REFERENCES `trs_398_method` (`method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary view structure for view `facility_stated_v`
+--
+
+DROP TABLE IF EXISTS `facility_stated_v`;
+/*!50001 DROP VIEW IF EXISTS `facility_stated_v`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `facility_stated_v` AS SELECT 
+ 1 AS `audit_id`,
+ 1 AS `revision_num`,
+ 1 AS `audit_date`,
+ 1 AS `facility_id`,
+ 1 AS `facility_name`,
+ 1 AS `linac_id`,
+ 1 AS `linac_serial_number`,
+ 1 AS `linac_model`,
+ 1 AS `linac_manufacturer`,
+ 1 AS `trs_398_id`,
+ 1 AS `trs_398_description`,
+ 1 AS `planning_system_id`,
+ 1 AS `planning_system_name`,
+ 1 AS `planning_system_version`,
+ 1 AS `planning_system_manufacturer`,
+ 1 AS `ps_algorithm_id`,
+ 1 AS `ps_algorithm_name`,
+ 1 AS `ct_id`,
+ 1 AS `ct_model`,
+ 1 AS `ct_manufacturer`,
+ 1 AS `phantom_id`,
+ 1 AS `phantom_name`,
+ 1 AS `energy_level_energy_level`,
+ 1 AS `amount`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `linac_models`
@@ -422,26 +456,57 @@ CREATE TABLE `results` (
   `cases_case_id` int NOT NULL,
   `audits_audit_id` int NOT NULL,
   `audits_revision_num` int NOT NULL,
-  `energy_level_energy_level` varchar(45) NOT NULL,
+  `energy_level` varchar(45) NOT NULL,
   `measured_current` decimal(65,30) DEFAULT NULL,
-  `predicited_current` decimal(65,30) DEFAULT NULL,
+  `predicted_current` decimal(65,30) DEFAULT NULL,
   `variation_pc` decimal(65,3) DEFAULT NULL,
   `planning_system_algorithm_algorithm_id` int NOT NULL,
-  PRIMARY KEY (`result_id`,`points_point`,`beams_beam_id`,`cases_case_id`,`audits_audit_id`,`audits_revision_num`,`energy_level_energy_level`,`planning_system_algorithm_algorithm_id`),
+  PRIMARY KEY (`result_id`,`points_point`,`beams_beam_id`,`cases_case_id`,`audits_audit_id`,`audits_revision_num`,`energy_level`,`planning_system_algorithm_algorithm_id`),
   KEY `fk_results_points1_idx` (`points_point`),
   KEY `fk_results_beams1_idx` (`beams_beam_id`),
   KEY `fk_results_cases1_idx` (`cases_case_id`),
   KEY `fk_results_audits1_idx` (`audits_audit_id`,`audits_revision_num`),
-  KEY `fk_results_energy_level1_idx` (`energy_level_energy_level`),
+  KEY `fk_results_energy_level1_idx` (`energy_level`),
   KEY `fk_results_planning_system_algorithm1_idx` (`planning_system_algorithm_algorithm_id`),
   CONSTRAINT `fk_results_audits1` FOREIGN KEY (`audits_audit_id`, `audits_revision_num`) REFERENCES `audits` (`audit_id`, `revision_num`),
   CONSTRAINT `fk_results_beams1` FOREIGN KEY (`beams_beam_id`) REFERENCES `beams` (`beam_id`),
   CONSTRAINT `fk_results_cases1` FOREIGN KEY (`cases_case_id`) REFERENCES `cases` (`case_id`),
-  CONSTRAINT `fk_results_energy_level1` FOREIGN KEY (`energy_level_energy_level`) REFERENCES `energy_level` (`energy_level`),
+  CONSTRAINT `fk_results_energy_level1` FOREIGN KEY (`energy_level`) REFERENCES `energy_level` (`energy_level`),
   CONSTRAINT `fk_results_planning_system_algorithm1` FOREIGN KEY (`planning_system_algorithm_algorithm_id`) REFERENCES `planning_system_algorithm` (`algorithm_id`),
   CONSTRAINT `fk_results_points1` FOREIGN KEY (`points_point`) REFERENCES `points` (`point`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary view structure for view `results_v`
+--
+
+DROP TABLE IF EXISTS `results_v`;
+/*!50001 DROP VIEW IF EXISTS `results_v`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `results_v` AS SELECT 
+ 1 AS `result_id`,
+ 1 AS `audit_id`,
+ 1 AS `revision_num`,
+ 1 AS `version`,
+ 1 AS `audit_date`,
+ 1 AS `facility_id`,
+ 1 AS `facility`,
+ 1 AS `point`,
+ 1 AS `point_position`,
+ 1 AS `beam`,
+ 1 AS `beam_description`,
+ 1 AS `beam_direction`,
+ 1 AS `case_id`,
+ 1 AS `case_description`,
+ 1 AS `energy_level`,
+ 1 AS `measured_current`,
+ 1 AS `predicted_current`,
+ 1 AS `variation_pc`,
+ 1 AS `algorithm_id`,
+ 1 AS `algorithm_name`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `trs_398_method`
@@ -473,10 +538,6 @@ CREATE TABLE `versions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping routines for database 'AA_AUDIT'
---
-
---
 -- Final view structure for view `audits_v`
 --
 
@@ -484,12 +545,48 @@ CREATE TABLE `versions` (
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8 */;
-/*!50001 SET character_set_results     = utf8 */;
-/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `audits_v` AS select `audits`.`audit_id` AS `audit_id`,`audits`.`revision_num` AS `revision_num`,`audits`.`versions_version` AS `versions_version`,`audits`.`audit_date` AS `audit_date`,`audits`.`facilities_facility_id` AS `facilities_facility_id`,`facilities`.`name` AS `facility_name`,`facility_operator`.`name` AS `facility_operator_name`,`facility_operator`.`operator_id` AS `operator_id`,`reports`.`report_id` AS `report_id`,`reports`.`reporting_date` AS `reporting_date` from ((((`audits` join `facilities` on((`audits`.`facilities_facility_id` = `facilities`.`facility_id`))) join `facility_operator` on((`facilities`.`facility_operator_operator_id` = `facility_operator`.`operator_id`))) join `audits_has_reports` on((`audits`.`audit_id` = `audits_has_reports`.`audits_audit_id`))) join `reports` on((`audits`.`audit_id` = `audits_has_reports`.`audits_audit_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `facility_stated_v`
+--
+
+/*!50001 DROP VIEW IF EXISTS `facility_stated_v`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `facility_stated_v` AS select `facility_stated`.`audits_audit_id` AS `audit_id`,`facility_stated`.`audits_revision_num` AS `revision_num`,`audits`.`audit_date` AS `audit_date`,`facilities`.`facility_id` AS `facility_id`,`facilities`.`name` AS `facility_name`,`facility_stated`.`facilities_has_linacs_linac_id` AS `linac_id`,`facilities_has_linacs`.`linac_serial_number` AS `linac_serial_number`,`linac_models`.`model` AS `linac_model`,`linac_models`.`manufacturer` AS `linac_manufacturer`,`facility_stated`.`trs_398_method_method_id` AS `trs_398_id`,`trs_398_method`.`description` AS `trs_398_description`,`facility_stated`.`facilities_has_planning_systems_planning_systems_ps_id` AS `planning_system_id`,`planning_systems`.`name` AS `planning_system_name`,`planning_systems`.`version` AS `planning_system_version`,`planning_systems`.`manufacturer` AS `planning_system_manufacturer`,`facility_stated`.`planning_system_algorithm_algorithm_id` AS `ps_algorithm_id`,`planning_system_algorithm`.`algorithm_name` AS `ps_algorithm_name`,`facility_stated`.`facilities_has_cts_ct_id` AS `ct_id`,`ct_models`.`model` AS `ct_model`,`ct_models`.`manufacturer` AS `ct_manufacturer`,`facility_stated`.`phantoms_phantom_id` AS `phantom_id`,`phantoms`.`name` AS `phantom_name`,`facility_stated`.`energy_level_energy_level` AS `energy_level_energy_level`,`facility_stated`.`amount` AS `amount` from (((((((((`facility_stated` join `audits` on(((`facility_stated`.`audits_audit_id` = `audits`.`audit_id`) and (`facility_stated`.`audits_revision_num` = `audits`.`revision_num`)))) join `facilities` on((`audits`.`facilities_facility_id` = `facilities`.`facility_id`))) join `facilities_has_linacs` on((`facility_stated`.`facilities_has_linacs_linac_id` = `facilities_has_linacs`.`linac_id`))) join `linac_models` on((`facilities_has_linacs`.`linacs_linac_model_id` = `linac_models`.`linac_model_id`))) join `trs_398_method` on((`facility_stated`.`trs_398_method_method_id` = `trs_398_method`.`method_id`))) join `planning_systems` on((`facility_stated`.`facilities_has_planning_systems_planning_systems_ps_id` = `planning_systems`.`ps_id`))) join `planning_system_algorithm` on((`facility_stated`.`planning_system_algorithm_algorithm_id` = `planning_system_algorithm`.`algorithm_id`))) join `ct_models` on((`facility_stated`.`facilities_has_cts_ct_id` = `ct_models`.`ct_model_id`))) join `phantoms` on((`facility_stated`.`phantoms_phantom_id` = `phantoms`.`phantom_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `results_v`
+--
+
+/*!50001 DROP VIEW IF EXISTS `results_v`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `results_v` AS select `results`.`result_id` AS `result_id`,`results`.`audits_audit_id` AS `audit_id`,`audits`.`revision_num` AS `revision_num`,`audits`.`versions_version` AS `version`,`audits`.`audit_date` AS `audit_date`,`audits`.`facilities_facility_id` AS `facility_id`,`facilities`.`name` AS `facility`,`results`.`points_point` AS `point`,`points`.`position` AS `point_position`,`results`.`beams_beam_id` AS `beam`,`beams`.`description` AS `beam_description`,`beams`.`direction` AS `beam_direction`,`results`.`cases_case_id` AS `case_id`,`cases`.`description` AS `case_description`,`results`.`energy_level` AS `energy_level`,`results`.`measured_current` AS `measured_current`,`results`.`predicted_current` AS `predicted_current`,`results`.`variation_pc` AS `variation_pc`,`results`.`planning_system_algorithm_algorithm_id` AS `algorithm_id`,`planning_system_algorithm`.`algorithm_name` AS `algorithm_name` from ((((((`results` join `points` on((`results`.`points_point` = `points`.`point`))) join `beams` on((`results`.`beams_beam_id` = `beams`.`beam_id`))) join `cases` on((`results`.`cases_case_id` = `cases`.`case_id`))) join `audits` on(((`results`.`audits_audit_id` = `audits`.`audit_id`) and (`results`.`audits_revision_num` = `audits`.`revision_num`)))) join `facilities` on((`audits`.`facilities_facility_id` = `facilities`.`facility_id`))) join `planning_system_algorithm` on((`results`.`planning_system_algorithm_algorithm_id` = `planning_system_algorithm`.`algorithm_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -503,4 +600,4 @@ CREATE TABLE `versions` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-30  8:59:01
+-- Dump completed on 2020-10-19 13:25:03

@@ -7,6 +7,7 @@ c.Repo2DockerSpawner.build_image = 'jupyter/repo2docker:0.11.0'
 c.DockerSpawner.image = 'jupyter/scipy-notebook'
 c.DockerSpawner.network_name = 'jupyterhub_network'
 c.JupyterHub.hub_ip = '0.0.0.0' 
+c.DockerSpawner.use_internal_ip = True
 c.JupyterHub.hub_connect_ip = 'jupyterhub' #hub container name
 c.Authenticator.admin_users = {'admin'} #admin user still needs to be created on start up but does not need to be authorized
 c.DockerSpawner.start_timeout = 600
