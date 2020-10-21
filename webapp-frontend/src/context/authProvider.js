@@ -27,7 +27,7 @@ const AuthenticationProvider = ({ children }) => {
       });
     } catch (e) {
       console.log(e.response);
-      enqueueSnackbar(e.response?.data?.message, {
+      enqueueSnackbar(e.response?.data?.message || "Error in logging in", {
         variant: "error",
       });
     }

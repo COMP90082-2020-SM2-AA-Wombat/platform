@@ -6,7 +6,9 @@ import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import AddIcon from "@material-ui/icons/Add";
-
+import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
+import { Button } from "@material-ui/core";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 export default function NavBar() {
   const location = useLocation();
   const classes = useStyles();
@@ -15,7 +17,7 @@ export default function NavBar() {
     <BottomNavigation value={location.pathname.split("/")[1]} className={classes.navigation}>
       <BottomNavigationAction
         label="CSV/JSON"
-        value="csv"
+        value="csv-json"
         icon={<AssessmentIcon />}
         component={Link}
         to="/csv-json"
@@ -26,6 +28,16 @@ export default function NavBar() {
         icon={<AddIcon />}
         component={Link}
         to="/insertions"
+      />
+      <BottomNavigationAction
+        label="JuptyerHub"
+        icon={<LibraryBooksIcon />}
+        onClick={() => window.location.assign(process.env.REACT_APP_JUPTYER)}
+      />
+      <BottomNavigationAction
+        label="Logout"
+        icon={<ExitToAppIcon />}
+        onClick={() => window.location.reload()}
       />
     </BottomNavigation>
   );

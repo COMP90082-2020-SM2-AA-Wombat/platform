@@ -69,4 +69,4 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 
 #### RUNNING DOCKER COMPOSE
 
-`docker-compose -f docker-compose.prod.yml up -d --build`
+`docker-compose -f docker-compose.yaml up -d --build`
