@@ -9,17 +9,15 @@ def auth_decorator():
         def __auth_decorator(*args, **kwargs):
             if ("Authorization" not in request.headers):
                 abort(make_response(jsonify(message="Access Forbidden"), 401))
-
+            
             token = request.headers["Authorization"]
             if not token:
                 abort(make_response(jsonify(message="Access Forbidden"), 401))
-
-            url = "http://jupyterhub:8000/hub/api/info"
+            url = "http://jupyterhub:8000/hub/api/user"
             headers = {
                 "content-type": "application/json",
                 "Authorization": token
             }
-            print(headers)
             res = requests.get(url, headers=headers)
             
             if (not res.ok):
