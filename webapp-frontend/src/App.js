@@ -1,8 +1,10 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import CSVPage from "./pages/CSVPage";
+
 import { SnackbarProvider } from "notistack";
+
+import { AuthenticationProvider } from "./context/authProvider";
+import Main from "./Main";
 
 const styles = {
   success: { backgroundColor: "purple" },
@@ -22,7 +24,9 @@ function App() {
       }}
       maxSnack={3}
     >
-      <CSVPage />
+      <AuthenticationProvider>
+        <Main />
+      </AuthenticationProvider>
     </SnackbarProvider>
   );
 }
