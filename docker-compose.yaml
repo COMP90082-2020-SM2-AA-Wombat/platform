@@ -50,9 +50,12 @@ services:
     networks:
       - frontend_network
       - backend_network
+      - jupyterhub_network
 
     depends_on:
       - webapp-backend
+      - jupyterhub
+
     environment:
       REACT_APP_API_DNS: "localhost:5000"
 
