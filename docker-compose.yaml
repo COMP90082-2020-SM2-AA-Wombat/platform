@@ -11,9 +11,6 @@ services:
     # TO-DO: create jupyter analyst user and webapp user
     environment:
       MYSQL_DATABASE: "AA_AUDIT"
-      restart: always
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "password"
       MYSQL_ROOT_PASSWORD: "password"
     volumes:
       # sql scripts will be run automatically only when volume is empty (ie initial startup)
@@ -24,10 +21,12 @@ services:
     networks:
       - backend_network
       - jupyterhub_network
+    command: --default-authentication-plugin=mysql_native_password
+
 
   webapp-backend:
     build: ./webapp-backend
-    # restart: always
+    restart: always
     container_name: webapp-backend
     volumes:
       - ./webapp-backend/app:/app
@@ -43,6 +42,7 @@ services:
 
   webapp-frontend:
     build: ./webapp-frontend
+    restart: always
     container_name: webapp-frontend
     image: webapp-frontend
     ports:
@@ -51,13 +51,11 @@ services:
       - frontend_network
       - backend_network
       - jupyterhub_network
-
+    environment:
+      REACT_APP_API_DNS: "localhost:5000"
     depends_on:
       - webapp-backend
       - jupyterhub
-
-    environment:
-      REACT_APP_API_DNS: "localhost:5000"
 
   jupyterhub:
     build: ./jupyterhub
@@ -93,5 +91,5 @@ networks:
   frontend_network:
   backend_network:
   jupyterhub_network:
-    driver: bridge
-    name: jupyterhub_network
+    # driver: bridge
+    # name: jupyterhub_network
