@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.21, for macos10.15 (x86_64)
 --
--- Host: localhost    Database: AA_AUDIT
+-- Host: localhost    Database: aa_audit
 -- ------------------------------------------------------
 -- Server version	8.0.21
 
@@ -14,6 +14,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+USE `aa_audit`;
 
 --
 -- Dumping data for table `auditors`

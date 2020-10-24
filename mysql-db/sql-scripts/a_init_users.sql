@@ -2,9 +2,9 @@ CREATE ROLE 'db_writer_role';
 CREATE ROLE 'db_reader_role';
 CREATE ROLE 'db_admin_role';
 
-GRANT ALL ON AA_AUDIT.* TO 'db_admin_role';
-GRANT SELECT ON AA_AUDIT.* TO 'db_reader_role';
-GRANT INSERT, UPDATE, DELETE ON AA_AUDIT.* TO 'db_writer_role';
+GRANT ALL ON aa_audit.* TO 'db_admin_role';
+GRANT SELECT ON aa_audit.* TO 'db_reader_role';
+GRANT INSERT, UPDATE, DELETE ON aa_audit.* TO 'db_writer_role';
 
 CREATE USER 'webapp_user'
     IDENTIFIED WITH mysql_native_password BY 'webapp_password' 
