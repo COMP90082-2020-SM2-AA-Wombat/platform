@@ -129,18 +129,11 @@ def bulk_fields():
 
 def addBulkFields(body, updateOrReplace):
     cursor = db.connection.cursor(buffered=True)
-    set_of_tables = set()
-    list_of_tables = []
+
     for item in body:
         if necessaryFieldsMissing(item):
             db.connection.rollback()
             return create_error_400("Missing field: 'table', 'fields' or 'values'")
-        set_of_tables.add(item["table"])
-        list_of_tables.append(item["table"])
-    if not (len(list_of_tables) == len(set_of_tables)):
-        db.connection.rollback()
-        return create_error_400("You put duplicate table insertions")
-    for item in body:
         try:
             insertTableFields(item, cursor, updateOrReplace)
         except mysql.connector.Error as err:
