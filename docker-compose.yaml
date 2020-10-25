@@ -23,38 +23,38 @@ services:
       - jupyterhub_network
     command: --default-authentication-plugin=mysql_native_password
 
-  # webapp-backend:
-  #   build: ./webapp-backend
-  #   restart: always
-  #   container_name: webapp-backend
-  #   volumes:
-  #     - ./webapp-backend/app:/app
-  #   ports:
-  #     - "5000:5000"
-  #   networks:
-  #     - frontend_network
-  #     - backend_network
-  #     - jupyterhub_network
-  #   depends_on:
-  #     - db
-  #     - jupyterhub
+  webapp-backend:
+    build: ./webapp-backend
+    restart: always
+    container_name: webapp-backend
+    volumes:
+      - ./webapp-backend/app:/app
+    ports:
+      - "5000:5000"
+    networks:
+      - frontend_network
+      - backend_network
+      - jupyterhub_network
+    depends_on:
+      - db
+      - jupyterhub
 
-  # webapp-frontend:
-  #   build: ./webapp-frontend
-  #   restart: always
-  #   container_name: webapp-frontend
-  #   image: webapp-frontend
-  #   ports:
-  #     - "3000:80"
-  #   networks:
-  #     - frontend_network
-  #     - backend_network
-  #     - jupyterhub_network
-  #   environment:
-  #     REACT_APP_API_DNS: "localhost:5000"
-  #   depends_on:
-  #     - webapp-backend
-  #     - jupyterhub
+  webapp-frontend:
+    build: ./webapp-frontend
+    restart: always
+    container_name: webapp-frontend
+    image: webapp-frontend
+    ports:
+      - "3000:80"
+    networks:
+      - frontend_network
+      - backend_network
+      - jupyterhub_network
+    environment:
+      REACT_APP_API_DNS: "localhost:5000"
+    depends_on:
+      - webapp-backend
+      - jupyterhub
 
   jupyterhub:
     build: ./jupyterhub

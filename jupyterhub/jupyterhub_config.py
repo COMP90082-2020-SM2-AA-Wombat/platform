@@ -24,6 +24,12 @@ c.DockerSpawner.network_name = 'jupyterhub_network'
 # c.DockerSpawner.use_internal_ip = True
 c.Authenticator.admin_users = {'admin'} #admin user still needs to be created on start up but does not need to be authorized
 
+notebook_dir = '/home/jovyan/work'
+c.DockerSpawner.notebook_dir = notebook_dir
+# Mount the real user's Docker volume on the host to the notebook user's
+# notebook directory in the container
+c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+
 c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator' #hub/authorize when logged in as admin will allow you to authorize the creation of new users.
                                                                                 #See https://native-authenticator.readthedocs.io/en/latest/quickstart.html
 c.DockerSpawner.remove_containers = True #containers are deleted when stopped

@@ -1,8 +1,13 @@
 FROM jupyter/scipy-notebook
 
-COPY requirements.txt /srv/requirements.txt
+# TODO: Pull reqs from frontend
+COPY requirements.txt /srv/jupyterhub/requirements.txt
 
-RUN pip install --upgrade pip && pip install -r /srv/requirements.txt
+RUN pip install --upgrade pip && pip install -r /srv/jupyterhub/requirements.txt
+
+RUN pip install jupyterlab-git && \
+    jupyter serverextension enable --py --sys-prefix jupyterlab_git && \
+    jupyter labextension install @jupyterlab/git
 
 # ENTRYPOINT ["tini", "--", "/srv/docker-entrypoint.sh"]
 
