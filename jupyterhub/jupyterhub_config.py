@@ -1,16 +1,25 @@
 c = get_config()
 
-c.JupyterHub.spawner_class = 'repo2dockerspawner.Repo2DockerSpawner' #see https://github.com/ideonate/repo2dockerspawner
+# launch with docker
 
-# default images
-c.Repo2DockerSpawner.build_image = 'jupyter/repo2docker:0.11.0'
-c.DockerSpawner.image = 'jupyter/scipy-notebook'
+c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
+
+# we need the hub to listen on all ips when it is in a container
+c.JupyterHub.hub_ip = '0.0.0.0'
+
+# the hostname/ip that should be used to connect to the hub
+# this is usually the hub container's name
+c.JupyterHub.hub_connect_ip = 'jupyterhub'
+
+# pick a docker image. This should have the same version of jupyterhub
+# in it as our Hub.
+c.DockerSpawner.image = 'jupyter/customm-lab'
+
 c.DockerSpawner.network_name = 'jupyterhub_network'
-c.JupyterHub.hub_ip = '0.0.0.0' 
-c.DockerSpawner.use_internal_ip = True
-c.JupyterHub.hub_connect_ip = 'jupyterhub' #hub container name
+
+# c.DockerSpawner.use_internal_ip = True
 c.Authenticator.admin_users = {'admin'} #admin user still needs to be created on start up but does not need to be authorized
-c.DockerSpawner.start_timeout = 600
+
 c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator' #hub/authorize when logged in as admin will allow you to authorize the creation of new users.
                                                                                 #See https://native-authenticator.readthedocs.io/en/latest/quickstart.html
 c.DockerSpawner.remove_containers = True #containers are deleted when stopped
