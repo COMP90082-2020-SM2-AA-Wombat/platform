@@ -10,10 +10,14 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 # the hostname/ip that should be used to connect to the hub
 # this is usually the hub container's name
 c.JupyterHub.hub_connect_ip = 'jupyterhub'
+# c.DockerSpawner.use_internal_ip = True
+# c.DockerSpawner.extra_host_config = { 'network_mode': 'jupyterhub_network' }
 
 # pick a docker image. This should have the same version of jupyterhub
 # in it as our Hub.
-c.DockerSpawner.image = 'jupyter/customm-lab'
+# c.DockerSpawner.image = 'jupyter/scipy-notebook'
+c.DockerSpawner.image = 'custom-lab'
+# c.DockerSpawner.start_timeout = 600
 
 c.DockerSpawner.network_name = 'jupyterhub_network'
 
