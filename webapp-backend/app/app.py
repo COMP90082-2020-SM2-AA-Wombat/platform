@@ -66,7 +66,7 @@ def process_results_csv(results_df):
         valueList = []
         for column in columns:
             if (isinstance(result[column ], float) and math.isnan(result[column ])):
-                valueList.append("NULL")
+                valueList.append("")
             else:
                 valueList.append(result[column])
         dataToInsert.append(tuple(valueList))
@@ -83,7 +83,7 @@ def process_facility_stated_csv(f_df):
         valueList = []
         for column in columns:
             if (isinstance(result[column ], float) and math.isnan(result[column ])):
-                valueList.append("NULL")
+                valueList.append("")
             else:
                 valueList.append(result[column])
         dataToInsert.append(tuple(valueList))
