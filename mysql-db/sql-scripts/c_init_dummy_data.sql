@@ -1,3 +1,5 @@
+-- This script inserts dummy data into the db upon startup
+
 -- MySQL dump 10.13  Distrib 8.0.21, for macos10.15 (x86_64)
 --
 -- Host: localhost    Database: aa_audit

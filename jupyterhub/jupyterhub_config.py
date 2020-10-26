@@ -14,10 +14,14 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 # this is usually the hub container's name
 c.JupyterHub.hub_connect_ip = 'jupyterhub'
 
-c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator' #hub/authorize when logged in as admin will allow you to authorize the creation of new users.
 
+# hub/authorize when logged in as admin will allow you to authorize the creation of new users 
+# See https://native-authenticator.readthedocs.io/en/latest/quickstart.html
+c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator' 
+
+# admin user will have access to all other user's accounts
 c.JupyterHub.admin_access = True
-                                                                                #See https://native-authenticator.readthedocs.io/en/latest/quickstart.html
+
 # ----Docker Spawner Configs-------
 
 # The network for spawned containers
@@ -45,8 +49,7 @@ c.Spawner.default_url = '/lab' #use jupyterlab
 
 '''
 TO-DO: 
-    - Limit user access to certain dirs in repo
-    - spwan spawners on user's host machine
-    - export notebooks from jupyter console
-    - allow for input as to what image to be spawned
+    - Limit user access to system files in repo 
+    - spwan spawners on user's host machine as an option
+    - allow for input as to what image to be spawned (other custom-labs)
 '''

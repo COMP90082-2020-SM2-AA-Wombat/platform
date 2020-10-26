@@ -1,3 +1,5 @@
+-- This script initalises the users for the db upon startup
+
 CREATE ROLE 'db_writer_role';
 CREATE ROLE 'db_reader_role';
 CREATE ROLE 'db_admin_role';
