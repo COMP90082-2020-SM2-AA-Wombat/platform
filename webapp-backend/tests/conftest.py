@@ -8,25 +8,8 @@ from flaskr.db import get_db
 from flaskr.db import init_db
 
 # read in SQL for populating test data
-# with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
-#     _data_sql = f.read().decode("utf8")
-
-DATABASE= {
-    'user': settings.DB_USERNAME,
-    'password': settings.DB_PASSWORD,
-    'host': settings.DB_HOST,
-    'port': settings.DB_PORT,
-    'database': settings.DATABASE_NAME,
-    'auth_plugin':'mysql_native_password'
-}
-
-# DB setting for non-test env
-if not os.environ.get('TEST'):
-    dbc = psycopg2.connect(**db_settings)
-    dbc.autocommit = True
-else:
-	# if we are in test return dummy object we will override by mock
-	dbc = None
+with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
+    _data_sql = f.read().decode("utf8")
 
 
 @pytest.fixture
@@ -35,11 +18,12 @@ def app():
     # create a temporary file to isolate the database for each test
     db_fd, db_path = tempfile.mkstemp()
     # create the app with common test config
-    app = create_app({"TESTING": True, "DATABASE": DATABASE})
+    app = create_app({"TESTING": True, "DATABASE": db_path})
 
     # create the database and load test data
     with app.app_context():
         init_db()
+        get_db().executescript(_data_sql)
 
     yield app
 
@@ -66,8 +50,11 @@ class AuthActions(object):
 
     def login(self, username="test", password="test"):
         return self._client.post(
-            "/login", data={"username": username, "password": password}
+            "/auth/login", data={"username": username, "password": password}
         )
+
+    def logout(self):
+        return self._client.get("/auth/logout")
 
 
 @pytest.fixture

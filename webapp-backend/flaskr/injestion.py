@@ -56,7 +56,7 @@ def insert_field():
         print("Message", err.msg)
         get_db().rollback()
         return create_error_400(err.msg)
-     except:
+    except:
         get_db().rollback()
         return create_error_400("Failed to add data")
     return make_response({"message": "Successfully added field data"}, 200)
