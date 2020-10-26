@@ -10,10 +10,9 @@ WORKDIR /app
 
 RUN pip install --editable .
 
-# RUN flask init-db
 
 # Unit tests
-# RUN pip install pytest && pytest
+RUN pip install pytest && pytest
 
 EXPOSE 5000
 
