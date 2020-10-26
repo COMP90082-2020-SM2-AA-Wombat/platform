@@ -1,15 +1,43 @@
-# Platform
+# Overview
 
-This repository is the central repsoitry.
+This repository contains all of the necessary code in order to run our entire system.
 
-It deplys the application using docker compose.
+The main components of the system are:
 
-Push to main with approval only by group members.
+- JuptyerHub
+- Backend of the web application (Flask)
+- Frontend of the web application (React.js)
+- MySQL database
 
-Commit all notebooks to notebooks repo
+## How to Deploy
 
-use shutdown.sh to bring everything down and start fresh
+### Requirements for Deployment:
 
-To do:
+- docker
+- docker compose
 
-- see comments in code
+### How to run:
+
+```
+./startup.sh
+```
+
+Running this command will spin up 4 containers, containing: the database, jupyterhub, the webapp frontend, and the webapp backend.
+
+To access the webapp frontend
+
+- Go to http://localhost:3000
+
+To access the webapp backend
+
+- Go to http://localhost:5000
+
+To access the JupyterHub
+
+- Go to http://localhost:8000
+
+### How to shutdown:
+
+```
+./shutdown.sh
+```
