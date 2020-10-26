@@ -3,4 +3,3 @@ matplotlib
 tabulate
 nbconvert
 IPython
-rifleman
