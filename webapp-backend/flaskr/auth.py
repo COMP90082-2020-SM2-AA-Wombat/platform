@@ -1,7 +1,19 @@
-from functools import wraps
-from flask import Flask, request, jsonify, Response, abort, make_response
-from json import dumps
 import requests
+from flask import Flask, request, jsonify, Response,abort,make_response, flash, Blueprint
+from functools import wraps
+
+bp = Blueprint("auth", __name__, url_prefix="/")
+
+@bp.route("/login", methods=["POST"])
+def login():
+    user_details = request.get_json()
+    url = "http://jupyterhub:8000/hub/api/authorizations/token"
+    headers = {'content-type': 'application/json'}
+    res = requests.post(url, json=user_details, headers=headers)
+    if (not res.ok):
+        abort(make_response(jsonify(message="Access Forbidden"), 401))
+    return make_response(res.json(),200)
+
 
 def auth_decorator():
     def _auth_decorator(f):
@@ -22,8 +34,6 @@ def auth_decorator():
             
             if (not res.ok):
                 abort(make_response(jsonify(message="Access Forbidden"), 401))
-                        
-
             return  f(*args, **kwargs)
         return __auth_decorator
     return _auth_decorator
