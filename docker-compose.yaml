@@ -76,9 +76,6 @@ services:
       # TO-DO: spawn user containers on user's machine (swarmspawner?)
       DOCKER_NETWORK_NAME: jupyterhub_network
       HUB_IP: jupyterhub
-      # DOCKER_NOTEBOOK_DIR: /home/jovyan/work
-      #TO-DO allow access for non admin users to only required directories in notebook repo
-      NB_PORT: 8000
     depends_on:
       - db
 

@@ -1,7 +1,6 @@
 mysql-connector-python
 matplotlib
-pandas
-scipy
 tabulate
 nbconvert
 IPython
+rifleman
