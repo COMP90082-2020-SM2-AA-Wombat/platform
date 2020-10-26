@@ -1,8 +1,10 @@
 import requests
 from flask import Flask, request, jsonify, Response,abort,make_response, flash, Blueprint
 from functools import wraps
+from flask_cors import CORS
 
 bp = Blueprint("auth", __name__, url_prefix="/")
+CORS(bp)
 
 @bp.route("/login", methods=["POST"])
 def login():

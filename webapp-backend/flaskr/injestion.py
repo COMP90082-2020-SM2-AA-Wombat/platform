@@ -7,12 +7,95 @@ import MySQLdb
 import  mysql.connector
 import pandas as pd
 from flaskr.auth import auth_decorator
+from flask_cors import CORS, cross_origin
+import json
 
 bp = Blueprint("injestion", __name__)
+CORS(bp)
 
 @bp.route("/")
 def index():
-    return "Welcome to injestion"
+    return "Welcome to ingestion"
+
+@bp.route("/csv", methods=["POST"])
+@auth_decorator()
+def csvInjestion() -> str:
+    files = request.files
+    get_db().start_transaction()
+    order_of_files = {
+        "jsons": [],
+        "results": [],
+        "facilities": []
+    }
+    try:
+        for key in files:
+            if key.endswith(".csv"):
+                df_csv = pd.read_csv(files[key], dtype=object)
+                if "results" in key:
+                    order_of_files["results"].append(df_csv)
+                elif "facility_stated" in key:
+                    order_of_files["facilities"].append(df_csv)
+            elif key.endswith(".json"):
+                order_of_files["jsons"].append(files[key])
+            else:
+                return create_error_400("Invalid file. Files must include either: '.json', or csvs with 'results' or 'facility_stated' in the filenames")
+        for json in order_of_files["jsons"]:
+            process_meta_data(json)
+        for results in order_of_files["results"]:
+            process_results_csv(results)
+        for facilities in order_of_files["facilities"]:
+            process_facility_stated_csv(facilities)
+        get_db().commit()
+    except mysql.connector.Error as err:
+        print(err)
+        print("Error Code:", err.errno)
+        print("SQLSTATE", err.sqlstate)
+        print("Message", err.msg)
+        get_db().rollback()
+        return create_error_400(err.msg)
+  
+    return make_response({"message": "Successfully added data"}, 200)
+
+def process_results_csv(results_df):
+    columns = list(results_df.columns)
+    cursor = get_db().cursor(buffered=True)
+    dataToInsert = []
+    for _, result in results_df.iterrows():
+        valueList = []
+        for column in columns:
+            if (isinstance(result[column ], float) and math.isnan(result[column ])):
+                valueList.append(None)
+            else:
+                valueList.append(result[column])
+        dataToInsert.append(tuple(valueList))
+    stmt = "INSERT INTO results (" + ", ".join(columns) + ") VALUES ( " + ("%s," * len(columns))[:-1] + ")"
+    cursor.executemany(stmt, dataToInsert)
+    cursor.close()
+    return
+
+def process_facility_stated_csv(f_df):
+    columns = list(f_df.columns)
+    cursor = get_db().cursor(buffered=True)
+    dataToInsert = []
+    for _, result in f_df.iterrows():
+        valueList = []
+        for column in columns:
+            if (isinstance(result[column ], float) and math.isnan(result[column ])):
+                valueList.append(None)
+            else:
+                valueList.append(result[column])
+        dataToInsert.append(tuple(valueList))
+    
+    stmt = "INSERT INTO facility_stated (" + ", ".join(columns) + ") VALUES ( " + ("%s," * len(columns))[:-1] + ")"
+    print(stmt)
+    cursor.executemany(stmt, dataToInsert)
+    cursor.close()
+    return
+
+def process_meta_data(meta_json):
+    meta_data = json.load(meta_json)
+    addBulkFields(meta_data, False)
+    return
 
 @bp.route("/table-fields", methods=["GET"])
 @auth_decorator()
@@ -72,7 +155,6 @@ def bulk_fields():
 
 def addBulkFields(body, updateOrReplace):
     cursor = get_db().cursor(buffered=True)
-
     for item in body:
         if necessaryFieldsMissing(item):
             get_db().rollback()

@@ -11,4 +11,5 @@ Commit all notebooks to notebooks repo
 use shutdown.sh to bring everything down and start fresh
 
 To do:
- - see comments in code
+
+- see comments in code
