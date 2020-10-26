@@ -72,10 +72,7 @@ services:
       - jupyterhub_network
     environment:
       #TO-DO: scipy-notebook not base image?
-      DOCKER_JUPYTER_IMAGE: jupyterlab/scipy-notebook
-      # TO-DO: spawn user containers on user's machine (swarmspawner?)
-      DOCKER_NETWORK_NAME: jupyterhub_network
-      HUB_IP: jupyterhub
+      DOCKER_JUPYTER_IMAGE: custom-lab
     depends_on:
       - db
 
