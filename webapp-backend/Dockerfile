@@ -1,13 +1,24 @@
+
 FROM python:3.6
 
-COPY ./requirements.txt /requirements.txt
+ENV FLASK_APP=flaskr
+ENV FLASK_ENV=development
 
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-EXPOSE 5000
+COPY . /app
 
 WORKDIR /app
 
-ENTRYPOINT ["python"]
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-CMD ["app.py"]
+# Unit tests
+RUN pip install pytest && pytest
+
+EXPOSE 5000
+
+CMD [ "flask", "run", "--host=0.0.0.0" ]
+
+
+
+
+
+
