@@ -28,7 +28,6 @@ c.JupyterHub.admin_access = True
 c.DockerSpawner.network_name = 'jupyterhub_network'
 
 # Docker image for spawned containers
-docker_image = jupyterlab/scipy-notebook
 c.DockerSpawner.image = os.environ.get('DOCKER_NOTEBOOK_DIR') or 'jupyter/scipy-notebook'
 
 # Admin users for spawned containers. NB: these users must still be created in the hub, but dont require authorization.
