@@ -1,30 +1,27 @@
-from typing import List, Dict
-from flask import Flask, request, jsonify, Response,abort,make_response
-import requests
-import json
-import os
-from flask_cors import CORS
-import pandas as pd
-from db import Db
+from flask import Flask, request, jsonify, Response, abort, make_response, Blueprint, g, flash
+from json import dumps
+from flaskr.db import get_db
 import sys
 import math
 import MySQLdb
 import  mysql.connector
-from middleware import auth_decorator 
+import pandas as pd
+from flaskr.auth import auth_decorator
+from flask_cors import CORS, cross_origin
+import json
 
-app = Flask(__name__)
-CORS(app)
-db = Db()
+bp = Blueprint("injestion", __name__)
+CORS(bp)
 
-@app.route('/')
-def index() -> str:
-    return "hello world"
+@bp.route("/")
+def index():
+    return "Welcome to ingestion"
 
-@app.route("/csv", methods=["POST"])
+@bp.route("/csv", methods=["POST"])
 @auth_decorator()
 def csvInjestion() -> str:
     files = request.files
-    db.connection.start_transaction()
+    get_db().start_transaction()
     order_of_files = {
         "jsons": [],
         "results": [],
@@ -48,24 +45,25 @@ def csvInjestion() -> str:
             process_results_csv(results)
         for facilities in order_of_files["facilities"]:
             process_facility_stated_csv(facilities)
-        db.connection.commit()
+        get_db().commit()
     except mysql.connector.Error as err:
         print(err)
         print("Error Code:", err.errno)
         print("SQLSTATE", err.sqlstate)
         print("Message", err.msg)
-        db.connection.rollback()
+        get_db().rollback()
         return create_error_400(err.msg)
+  
     return make_response({"message": "Successfully added data"}, 200)
 
 def process_results_csv(results_df):
     columns = list(results_df.columns)
-    cursor = db.connection.cursor(buffered=True)
+    cursor = get_db().cursor(buffered=True)
     dataToInsert = []
     for _, result in results_df.iterrows():
         valueList = []
         for column in columns:
-            if (isinstance(result[column ], float) and math.isnan(result[column ])):
+            if (isinstance(result[column], float) and math.isnan(result[column ])):
                 valueList.append(None)
             else:
                 valueList.append(result[column])
@@ -77,7 +75,7 @@ def process_results_csv(results_df):
 
 def process_facility_stated_csv(f_df):
     columns = list(f_df.columns)
-    cursor = db.connection.cursor(buffered=True)
+    cursor = get_db().cursor(buffered=True)
     dataToInsert = []
     for _, result in f_df.iterrows():
         valueList = []
@@ -99,14 +97,51 @@ def process_meta_data(meta_json):
     addBulkFields(meta_data, False)
     return
 
-@app.route("/fields", methods=["POST"])
+@bp.route("/table-fields", methods=["GET"])
+@auth_decorator()
+def getAllTableAndFields():
+    from collections import defaultdict
+    connection = get_db()
+    cursor = connection.cursor(buffered=True)
+    db_cursor = connection.cursor(buffered=True)
+    db_cursor.execute("SELECT DATABASE();")
+    db_name = db_cursor.fetchone()[0]
+    cursor.execute("SHOW TABLES")
+
+    tableWithFields = defaultdict(lambda : [])
+    for (table,) in cursor.fetchall():
+        attrCursor = connection.cursor(buffered=True)
+        print(f'SHOW COLUMNS FROM {db_name}.{table};')
+        try: 
+            decodedTable = table
+            if isinstance(table, bytearray):
+                decodedTable = table.decode('UTF-8')
+            attrCursor.execute(f'SHOW COLUMNS FROM {db_name}.{str(decodedTable)};')
+        except mysql.connector.Error as err:
+            print(err)
+            print("Error Code:", err.errno)
+            print("SQLSTATE", err.sqlstate)
+            print("Message", err.msg)
+            get_db().rollback()
+            return create_error_400(f'SHOW COLUMNS FROM {db_name}.{str(decodedTable)};')
+
+        for columnDetails in attrCursor.fetchall():
+            tableWithFields[table].append({
+                "field":columnDetails[0],
+                "type":columnDetails[1].decode('UTF-8')
+            })
+        attrCursor.close()
+
+    return make_response(tableWithFields, 200)
+
+@bp.route("/fields", methods=["POST"])
 @auth_decorator()
 def insert_field():
     updateOrReplace = request.args.get('updateOrReplace') == "true"
     body = request.get_json()
     if necessaryFieldsMissing(body):
         return create_error_400("Missing field: 'table', 'fields' or 'values'")
-    cursor = db.connection.cursor(buffered=True)
+    cursor = get_db().cursor(buffered=True)
     try:
         insertTableFields(body, cursor, updateOrReplace)
     except mysql.connector.Error as err:
@@ -114,25 +149,28 @@ def insert_field():
         print("Error Code:", err.errno)
         print("SQLSTATE", err.sqlstate)
         print("Message", err.msg)
-        db.connection.rollback()
+        get_db().rollback()
         return create_error_400(err.msg)
+    except:
+        get_db().rollback()
+        return create_error_400("Failed to add data")
     return make_response({"message": "Successfully added field data"}, 200)
 
-@app.route("/bulk-fields", methods=["POST"])
+@bp.route("/bulk-fields", methods=["POST"])
 @auth_decorator()
 def bulk_fields():
     updateOrReplace = request.args.get('updateOrReplace') == "true"
     body = request.get_json()
-    db.connection.start_transaction()
+    get_db().start_transaction()
     addBulkFields(body, updateOrReplace)
+    get_db().commit()
     return make_response({"message": "Successfully added bulk data"}, 200)
 
 def addBulkFields(body, updateOrReplace):
-    cursor = db.connection.cursor(buffered=True)
-
+    cursor = get_db().cursor(buffered=True)
     for item in body:
         if necessaryFieldsMissing(item):
-            db.connection.rollback()
+            get_db().rollback()
             return create_error_400("Missing field: 'table', 'fields' or 'values'")
         try:
             insertTableFields(item, cursor, updateOrReplace)
@@ -141,13 +179,14 @@ def addBulkFields(body, updateOrReplace):
             print("Error Code:", err.errno)
             print("SQLSTATE", err.sqlstate)
             print("Message", err.msg)
-            db.connection.rollback()
+            get_db().rollback()
             return create_error_400(err.msg)
-        
-    db.connection.commit()
+        except:
+            get_db().rollback()
+            return create_error_400("Failed to add data")        
     return 
 
-@app.route("/bulk-tables", methods=["POST"])
+@bp.route("/bulk-tables", methods=["POST"])
 @auth_decorator()
 def bulk():
     updateOrReplace = request.args.get('updateOrReplace') == "true"
@@ -155,29 +194,29 @@ def bulk():
     
     if not isinstance(body, list):
         return create_error_400("Invalid Payload")
-    db.connection.start_transaction()
-    cursor = db.connection.cursor(buffered=True)
+    get_db().start_transaction()
+    cursor = get_db().cursor(buffered=True)
     set_of_tables = set()
     list_of_tables = []
     for tableItem in body:
         if not isinstance(tableItem, dict):
-            db.connection.rollback()
+            get_db().rollback()
             return create_error_400("Invalid Payload")
         if ("table" not in tableItem) or ("insertions" not in tableItem):
-            db.connection.rollback()
+            get_db().rollback()
             return create_error_400("Invalid Payload")
         if not isinstance(tableItem["insertions"], list):
-            db.connection.rollback()
+            get_db().rollback()
             return create_error_400("Invalid Payload")
         for insertion in tableItem["insertions"]:
             if necessaryFieldsMissingNotIncludingTable(insertion):
-                db.connection.rollback()
+                get_db().rollback()
                 return create_error_400("Missing field: 'fields' or 'values'")
         set_of_tables.add(tableItem["table"])
         list_of_tables.append(tableItem["table"])
 
     if not (len(list_of_tables) == len(set_of_tables)):
-        db.connection.rollback()
+        get_db().rollback()
         return create_error_400("You put duplicate table insertions")
     for tableItem in body:
         for insertion in tableItem["insertions"]:
@@ -192,14 +231,17 @@ def bulk():
                 print("Error Code:", err.errno)
                 print("SQLSTATE", err.sqlstate)
                 print("Message", err.msg)
-                db.connection.rollback()
+                get_db().rollback()
                 return create_error_400(err.msg)
-    db.connection.commit()
+            except:
+                get_db().rollback()
+                return create_error_400("Failed to add data")
+    get_db().commit()
     return make_response({"message": "Successfully added bulk data"}, 200)
 
 
 def insertTableFields(body, cursor, updateOrReplace):
-    vals = ["'" + val + "'" for  val in body["values"]]
+    vals = [ "'" + val + "'" if val else "NULL" for  val in body["values"]]
     stmt = f'{"REPLACE" if updateOrReplace else "INSERT"} INTO {body["table"]} ({", ".join(body["fields"])}) VALUES ({", ".join(vals)});'
     cursor.execute(stmt)
     return
@@ -214,28 +256,5 @@ def necessaryFieldsMissingNotIncludingTable(body):
         return True
     return (not ("fields" in body and isinstance(body["fields"], list)) or not ("values" in body and isinstance(body["values"], list))  or not(len(body["fields"]) == len(body["values"])) )
 
-@app.route("/table-fields", methods=["GET"])
-@auth_decorator()
-def getAllTableAndFields():
-    return make_response(db.tableWithFields, 200)
-
-
-@app.route("/login", methods=["POST"])
-def login():
-    user_details = request.get_json()
-    url = "http://jupyterhub:8000/hub/api/authorizations/token"
-    headers = {'content-type': 'application/json'}
-    res = requests.post(url, json=user_details, headers=headers)
-    if (not res.ok):
-        abort(make_response(jsonify(message="Access Forbidden"), 401))
-    return make_response(res.json(),200)
-
 def create_error_400(errorMessage):
     abort(make_response(jsonify(message=errorMessage), 400))
-
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True,host='0.0.0.0',port=port)
-
-# FLASK_APP=app.py FLASK_ENV=development flask rune
