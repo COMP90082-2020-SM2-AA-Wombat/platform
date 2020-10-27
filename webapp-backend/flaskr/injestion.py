@@ -163,6 +163,7 @@ def bulk_fields():
     body = request.get_json()
     get_db().start_transaction()
     addBulkFields(body, updateOrReplace)
+    get_db().commit()
     return make_response({"message": "Successfully added bulk data"}, 200)
 
 def addBulkFields(body, updateOrReplace):
@@ -182,9 +183,7 @@ def addBulkFields(body, updateOrReplace):
             return create_error_400(err.msg)
         except:
             get_db().rollback()
-            return create_error_400("Failed to add data")
-        
-    get_db().commit()
+            return create_error_400("Failed to add data")        
     return 
 
 @bp.route("/bulk-tables", methods=["POST"])
