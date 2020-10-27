@@ -63,7 +63,7 @@ def process_results_csv(results_df):
     for _, result in results_df.iterrows():
         valueList = []
         for column in columns:
-            if (isinstance(result[column ], float) and math.isnan(result[column ])):
+            if (isinstance(result[column], float) and math.isnan(result[column ])):
                 valueList.append(None)
             else:
                 valueList.append(result[column])
@@ -241,7 +241,7 @@ def bulk():
 
 
 def insertTableFields(body, cursor, updateOrReplace):
-    vals = ["'" + val + "'" for  val in body["values"]]
+    vals = [ "'" + val + "'" if val else "NULL" for  val in body["values"]]
     stmt = f'{"REPLACE" if updateOrReplace else "INSERT"} INTO {body["table"]} ({", ".join(body["fields"])}) VALUES ({", ".join(vals)});'
     cursor.execute(stmt)
     return
