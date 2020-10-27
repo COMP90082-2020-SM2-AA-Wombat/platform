@@ -5,7 +5,6 @@ from flask_cors import CORS
 
 bp = Blueprint("auth", __name__, url_prefix="/")
 CORS(bp)
-
 @bp.route("/login", methods=["POST"])
 def login():
     user_details = request.get_json()

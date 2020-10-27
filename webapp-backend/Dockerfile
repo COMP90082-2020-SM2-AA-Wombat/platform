@@ -8,8 +8,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN pip install --editable .
-
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Unit tests
 RUN pip install pytest && pytest

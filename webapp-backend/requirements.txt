@@ -16,7 +16,6 @@ mccabe==0.6.1
 mirakuru==2.3.0
 mysql==0.0.2
 mysql-connector-python==8.0.21
-mysql-connector-python-rf==2.2.2
 mysqlclient==2.0.1
 numpy==1.19.2
 packaging==20.4

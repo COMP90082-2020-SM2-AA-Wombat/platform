@@ -111,7 +111,19 @@ def getAllTableAndFields():
     tableWithFields = defaultdict(lambda : [])
     for (table,) in cursor.fetchall():
         attrCursor = connection.cursor(buffered=True)
-        attrCursor.execute(f'SHOW COLUMNS FROM {db_name}.{table};')
+        print(f'SHOW COLUMNS FROM {db_name}.{table};')
+        try: 
+            decodedTable = table
+            if isinstance(table, bytearray):
+                decodedTable = table.decode('UTF-8')
+            attrCursor.execute(f'SHOW COLUMNS FROM {db_name}.{str(decodedTable)};')
+        except mysql.connector.Error as err:
+            print(err)
+            print("Error Code:", err.errno)
+            print("SQLSTATE", err.sqlstate)
+            print("Message", err.msg)
+            get_db().rollback()
+            return create_error_400(f'SHOW COLUMNS FROM {db_name}.{str(decodedTable)};')
 
         for columnDetails in attrCursor.fetchall():
             tableWithFields[table].append({
