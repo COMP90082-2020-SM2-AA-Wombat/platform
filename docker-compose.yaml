@@ -2,21 +2,17 @@ version: "3"
 
 services:
   db:
-    image: mysql
-    # restart when container crashes
+    image: mysql:8.0.22
     restart: always
     container_name: db
     ports:
       - "3306:3306"
-    # TO-DO: create jupyter analyst user and webapp user
     environment:
       MYSQL_DATABASE: "aa_audit"
       MYSQL_ROOT_PASSWORD: "root_password"
     volumes:
       # sql scripts will be run automatically only when volume is empty (ie initial startup)
-      #TO-DO: debug issues in startup of db (see logs on startup)
       - ./mysql-db/sql-scripts:/docker-entrypoint-initdb.d/:ro
-      # data persisted to this volume on host
       - db_data:/var/lib/mysql
     networks:
       - backend_network
@@ -48,8 +44,8 @@ services:
       - "3000:80"
     networks:
       - frontend_network
-      - backend_network
-      - jupyterhub_network
+      # - backend_network
+      # - jupyterhub_network
     environment:
       REACT_APP_API_DNS: "localhost:5000"
     depends_on:
@@ -62,17 +58,14 @@ services:
     restart: always
     container_name: jupyterhub
     volumes:
-      # TO-DO are these volumes needed if notebooks not persisted to disk?
       - /var/run/docker.sock:/var/run/docker.sock
       - jupyterhub_data:/srv/jupyterhub
     ports:
-      #TO-DO: expose hub to network to be access by remote users
       - "8000:8000"
     networks:
       - jupyterhub_network
     environment:
-      #TO-DO: scipy-notebook not base image?
-      DOCKER_JUPYTER_IMAGE: custom-lab
+      DOCKER_JUPYTER_IMAGE: 'custom-lab'
     depends_on:
       - db
 

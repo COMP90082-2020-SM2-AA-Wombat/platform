@@ -1,4 +1,4 @@
-FROM jupyterhub/jupyterhub
+FROM jupyterhub/jupyterhub:1.2
 
 RUN pip3 install dockerspawner 
 
