@@ -19,7 +19,7 @@ The main components of the system are:
 ### How to run:
 
 ```
-./startup.sh
+.scripts/startup.sh
 ```
 
 Running this command will spin up 4 containers, containing: the database, jupyterhub, the webapp frontend, and the webapp backend.
@@ -39,5 +39,5 @@ To access the JupyterHub
 ### How to shutdown:
 
 ```
-./shutdown.sh
+.scripts/shutdown.sh
 ```
