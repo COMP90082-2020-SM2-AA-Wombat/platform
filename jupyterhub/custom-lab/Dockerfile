@@ -1,9 +1,9 @@
 FROM jupyter/scipy-notebook
 
-COPY requirements.txt /srv/jupyterhub/requirements.txt
+COPY requirements.txt /etc/jupyterhub/requirements.txt
 
 RUN pip install --upgrade pip && \
-    pip install -r /srv/jupyterhub/requirements.txt
+    pip install -r /etc/jupyterhub/requirements.txt
 
 RUN pip install --upgrade jupyterlab jupyterlab-git 
 

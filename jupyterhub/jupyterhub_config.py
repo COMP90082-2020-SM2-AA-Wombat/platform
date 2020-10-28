@@ -5,6 +5,7 @@ c = get_config()
 # ----Jupyter Hub Configs-------
 
 # launch with docker
+# See https://github.com/jupyterhub/dockerspawner
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 
 # we need the hub to listen on all ips when it is in a container
@@ -39,11 +40,9 @@ c.DockerSpawner.notebook_dir = notebook_dir
 
 # Mount the real user's Docker volume on the host to the notebook user's notebook directory in the container. 
 # This is for both user and shared volumes.
-c.DockerSpawner.volumes = {
-                    #    'jupyterhub-userhome-{username}': { 'bind': notebook_dir , 'mode': 'rw'},
-                       'jupyterhub-user-{username}': { 'bind': notebook_dir, 'mode': 'rw'},
-                       'juypterhub-shared-data': { 'bind': notebook_dir + '/shared', 'mode': 'rw'}
-                       }
+c.DockerSpawner.volumes =   {'jupyterhub-user-{username}': { 'bind': notebook_dir, 'mode': 'rw'},
+                                'juypterhub-shared-data': { 'bind': notebook_dir + '/shared', 'mode': 'rw'}
+                            }
 
 # Spawned containers are deleted when stopped but voumes will remain on host
 c.DockerSpawner.remove_containers = True 
