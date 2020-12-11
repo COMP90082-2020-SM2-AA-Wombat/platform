@@ -21,6 +21,7 @@ services:
 
   webapp-backend:
     build: ./webapp-backend
+    image: acdsdevacr.azurecr.io/webapp-backend
     restart: always
     container_name: webapp-backend
     volumes:
@@ -37,6 +38,7 @@ services:
 
   webapp-frontend:
     build: ./webapp-frontend
+    image: acdsdevacr.azurecr.io/webapp-frontend
     restart: always
     container_name: webapp-frontend
     image: webapp-frontend
@@ -54,7 +56,7 @@ services:
 
   jupyterhub:
     build: ./jupyterhub
-    image: jupyterhub
+    image: acdsdevacr.azurecr.io/jupyterhub
     restart: always
     container_name: jupyterhub
     volumes:
